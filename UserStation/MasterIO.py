@@ -64,15 +64,20 @@ class MasterIO:
     def INIT(self):
         
         if self.__MasterState == "Connected":
-              
+             
+            self.__SetState("Intialized")
     #
     def GET(self):
-
+        if self.__MasterState == "Initialized":
+            
     #
     def UPDATE(self):
+        if self.__MasterState == "Initialized":
 
     #
     def ESTOP(self):
+        self.__SetState("EmergencyStop")
+        self.__SetFault("EmergencyStop",0x00)
           
 
 
