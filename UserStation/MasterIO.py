@@ -26,13 +26,11 @@ class MasterIO:
     __MasterSocketUDP = ""  #Client Socket used by Master to gather streaming data
     __MasterTCPPort = 4000  #Port Number Used to Define
     __MasterUDPPort = 8000  # Class Initializes 
-
     __CommandID = 0xFF      #Control ID Being Used
     __ObjectID = 0xFF       #ID of object 
     __ObjectOffset = 0      #
 
     #################  Methods ###################
-   
     #####CONSTRUCTOR
     def __init__(self,MasterAddr = '127.0.0.1',MasterPort = 4000, MasterStreamPort = 8000,SlaveAddr = '127.0.0.1'):
            self.__MasterAddr = MasterAddr
@@ -44,13 +42,13 @@ class MasterIO:
         self.__MasterState = StateString
     #Set Fault
     def __SetFault(self,FaultMessage,ID):
-        self.__FaultMessage = FaultMessage
+        self.__Faul
+        tMessage = FaultMessage
         self._FaultID = ID
-
     #######PUBLIC
     #
     def MasterConnect(self):
-         ##Create Socket and Attempt Connect
+         ##Create Socket and Attempt Connection
         if self.MasterState == "Start" and self.__ConnectAttempt != 3:
             self.__MasterSocketTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
@@ -75,20 +73,20 @@ class MasterIO:
             
             self.__SetState("Intialized")
     
+
+    #Gather Input Sensor Data from ROV
     def GET(self):
         if self.__MasterState == "Initialized":
             self.__CommandID = 0x20
-    #
+    #Update Output Data from User Station
     def UPDATE(self):
         if self.__MasterState == "Initialized":
             self.__CommandID = 0x30
-    #
+    #Emergency Stop
     def ESTOP(self):
         self.__SetState("EmergencyStop")
         self.__SetFault("EmergencyStop",0x00)
         self.__CommandID = 0x00
-          
-    
-    def Translate(self):
+   
         
 
