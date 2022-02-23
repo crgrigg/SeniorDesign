@@ -12,22 +12,23 @@ import threading
 class SlaveIO:
 
     #############Class Defined Values #######################
-    #######PRIVATE
-    __SlaveTCPState = "Start"  # Determines the state of the ROV Connection to the User Station
-    __SlaveUDPState = "Start" 
-    __FaultMessage = ""     # Shows Message associated with errors from connection
-    __FaultID = 0x00        # Fault ID for the Error
-    __SlaveSocketTCP = ""   # Socket object for TCP connection
-    __SlaveSocketUDP = ""   #Socket object for UDP Connection
-    __SlaveTCPPort = 4000   #TCP Port being used
-    __SlaveUDPPort = 8000   #UDP Port being used
-    __ListenCount = 0       #Number of times Listen timed out
-    __SlaveConnection = ""  #Connection Object from accepting a connection
+
+    #######PRIVATE#############
+    __SlaveTCPState = "Start"   # Determines the state of the ROV Connection to the User Station
+    __SlaveUDPState = "Start"  
+    __FaultMessage = ""         # Shows Message associated with errors from connection
+    __FaultID = 0x00            # Fault ID for the Error
+    __SlaveSocketTCP = ""       # Socket object for TCP connection
+    __SlaveSocketUDP = ""       #Socket object for UDP Connection
+    __SlaveTCPPort = 4000       #TCP Port being used
+    __SlaveUDPPort = 8000       #UDP Port being used
+    __ListenCount = 0           #Number of times Listen timed out
+    __SlaveConnection = ""      #Connection Object from accepting a connection
 
 
-    __SlaveThreadFlag = false #Control Threads for Asychronous execution
-    __SlaveTCPThread = ""     #Thread to control TCP Connection
-    __SlaveUDPThread = ""     #Thread to control UDP Connection
+    __SlaveThreadFlag = false   #Control Threads for Asychronous execution
+    __SlaveTCPThread = ""       #Thread to control TCP Connection
+    __SlaveUDPThread = ""       #Thread to control UDP Connection
 
     # User Connection Signals
     #  The first byte of communication will be a control command
@@ -40,8 +41,10 @@ class SlaveIO:
     __CommandID = 0xFF 
 
 
-    __UDPData = 0 # Holds the data recieved over UDP
-    __TCPData = 0 # Holds the data recieved over TCP
+
+    #######PUBLIC#############
+    UDPData = 0               # Holds the data recieved over UDP
+    TCPData = 0               # Holds the data recieved over TCP
 
     ###
 
@@ -62,6 +65,8 @@ class SlaveIO:
 
    #####PUBLIC
 
+
+   #Begin Slave(Server) Communication Connection
     def SlaveTCPStart(self):
         if self.SlaveTCPState == "Start":
             self.__SlaveSocketTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
@@ -94,32 +99,49 @@ class SlaveIO:
         else:
            return -1
 
+    #Close out Communciations and Join threads
+    def SlaveClose(self):
+        #Join threads
+        self.__SlaveThreadFlag = true
+        self.__SlaveTCPThread.join()
+        self.__SlaveUDPThread.join()
   
   
 
     def __SlaveTCPCommunication(self):
-       
-       #Recieve data from User Station
-       self.__SlaveSocketTCP.recv(1024)
-
-
-       #####Interperate Command########
-       if self.__CommandID == 0x10: ##INIT
-            #Establish UDP Communication
-            if (self.__SlaveState == "Ready"):
-                self.__SlaveSocketUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
-                self.__SlaveUDPThread = threading.Thread(target=self.__SlaveUDPCommunication)
-                self.__SlaveUDPThread.start()
+     
+       while self.__SlaveThreadFlag == false:
+            #Recieve data from User Station
+            self.__SlaveSocketTCP.recv(1024)
+            #####Interperate Command########
+            if self.__CommandID == 0x10: ##INIT
+                #Establish UDP Communication
+                if (self.__SlaveState == "Ready"):
+                    self.__SlaveSocketUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+                    self.__SlaveUDPThread = threading.Thread(target=self.__SlaveUDPCommunication)
+                    self.__SlaveUDPThread.start()
                
+                #Initialize Input Data from User Station
 
-            #Initialize Input Data from User Station
-
-            #Update CommandID and send Initial ROV Data
+                #Update CommandID and send Initial ROV Data
                 
-            #Update State
-                self.__SetState("Initialized")
+                #Update State
+                    self.__SetState("Initialized")
 
+       #If signalled close TCP communication 
+       if self.__SlaveThreadFlag == true:
+           self.__SlaveThredFlag == true
+
+
+    
     def __SlaveUDPCommunication(self):
+
+        while self.__SlaveThreadFlag == False:
+            self.__SlaveSocketUDP.sendto()
+        
+        #If signalled close TCP communication 
+        if self.__SlaveThreadFlag == True:
+            self.__SlaveThreadFlag = true
 
 
             
