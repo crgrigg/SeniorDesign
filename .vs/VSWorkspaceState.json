@@ -2,6 +2,7 @@
   "ExpandedNodes": [
     "",
     "\\ROV",
+    "\\Support",
     "\\UserStation"
   ],
   "SelectedNode": "\\ROV\\SlaveIO.py",
