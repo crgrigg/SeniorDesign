@@ -1,6 +1,6 @@
 
 import socket
-import concurrent.futures
+import threading
 from bitarray import bitarray
 
 #Author: Charles Griggs, Jay Franko
@@ -39,7 +39,11 @@ class MasterIO:
     # GET   - 0x30  Retrieve Inputs Data from Slave and send to Master
     # ESTOP - 0x00   Emergency Stop all process  ## Can you Stop process?
     # CLOSE - 0xF0   End Communication
-    __CommandID = 0xFF        
+    __CommandID = 0xFF 
+
+
+    __UDPData = 0 # Holds the data recieved over UDP
+    __TCPData = 0 # Holds the data recieved over TCP
 
     ###
 
@@ -76,7 +80,13 @@ class MasterIO:
         elif self.__ConnectAttempt == 3:
             self.__SetState("ExitwithFault")
             self.__SetFault("Failed to Make connection",0x02)
-
+        
+        ## Begin Communication Threads
+        if self.MasterState == "Connected":
+            self.__MasterTCPThread = threading.Thread(target=self.__MasterTCPCommunication)
+            self.__MasterUDPThread = threading.Thread(target=self.__MasterUDPCommunication)
+            self.__MasterTCPThread.start()
+            self.__MasterUDPThread.start()
       
     
     #Initialize Input and Output Data Between the User Station and the ROV.
@@ -112,11 +122,16 @@ class MasterIO:
         while(self.__MasterThreadFlag == false):
             if self.__CommandID == 0x10: ##INIT
                 self.__MasterSocketTCP.send("")
+               
+
             elif self.__CommandID == 0x20: ## GET
                 self.__MasterSocketTCP.send("")
+
             elif self.__CommandID == 0x30: ##UPDATE
                 self.___MasterSocketTCP.send("")
 
+            if self.__CommandID != 0xFF: ## if Initiated
+                 self.__MasterSocketTCP.recv(1024)
 
 
     #Executed by Master UDP Thread
@@ -124,3 +139,4 @@ class MasterIO:
         
         while(self.__MasterThreadFlag == false):
             #Add UDP Communication Information
+            self.__UDPData = self.__MasterSocketUDP.recvfrom()

@@ -1,5 +1,5 @@
 import socket
-
+import threading
 
 #Autho: Charles Griggs, Jay Franko
 #Date: February 18, 2022
@@ -23,6 +23,27 @@ class SlaveIO:
     __SlaveUDPPort = 8000   #UDP Port being used
     __ListenCount = 0       #Number of times Listen timed out
     __SlaveConnection = ""  #Connection Object from accepting a connection
+
+
+    __SlaveThreadFlag = false #Control Threads for Asychronous execution
+    __SlaveTCPThread = ""     #Thread to control TCP Connection
+    __SlaveUDPThread = ""     #Thread to control UDP Connection
+
+    # User Connection Signals
+    #  The first byte of communication will be a control command
+    # INIT - 0x10   Initialize on board data and send to user. Master will then intialize data based on this input
+    #           -Formatted Set of all data
+    # UPDATE - 0x20 Update output signals from Master to Slave
+    # GET   - 0x30  Retrieve Inputs Data from Slave and send to Master
+    # ESTOP - 0x00   Emergency Stop all process  ## Can you Stop process?
+    # CLOSE - 0xF0   End Communication
+    __CommandID = 0xFF 
+
+
+    __UDPData = 0 # Holds the data recieved over UDP
+    __TCPData = 0 # Holds the data recieved over TCP
+
+    ###
 
     ################# Methods ######################
     #####PRIVATE
@@ -67,15 +88,38 @@ class SlaveIO:
 
         if self.SlaveState == "Heard":
             self.__SlaveConnection, self.__MasterAddr = self.__SlaveSocketTCP.accept()
+            self.__SetState("Ready")
         if self.SlaveState == "Heard":
            return 1
         else:
            return -1
 
   
-    def SlaveUDPStart(self):
-        if self.SlaveUDPState == "Start":
-            self.__SlaveSocketUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
-            return 1
-        else:
-            return -1
+  
+
+    def __SlaveTCPCommunication(self):
+       
+       #Recieve data from User Station
+       self.__SlaveSocketTCP.recv(1024)
+
+
+       #####Interperate Command########
+       if self.__CommandID == 0x10: ##INIT
+            #Establish UDP Communication
+            if (self.__SlaveState == "Ready"):
+                self.__SlaveSocketUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+                self.__SlaveUDPThread = threading.Thread(target=self.__SlaveUDPCommunication)
+                self.__SlaveUDPThread.start()
+               
+
+            #Initialize Input Data from User Station
+
+            #Update CommandID and send Initial ROV Data
+                
+            #Update State
+                self.__SetState("Initialized")
+
+    def __SlaveUDPCommunication(self):
+
+
+            
