@@ -39,7 +39,7 @@ class MasterIO:
     # GET   - 0x30  Retrieve Inputs Data from Slave and send to Master
     # ESTOP - 0x00   Emergency Stop all process  ## Can you Stop process?
     # CLOSE - 0xF0   End Communication
-    __CommandID = 0xFF 
+    __CommandID = b'\xFF'
 
 
     __UDPData = 0 # Holds the data recieved over UDP
@@ -75,7 +75,7 @@ class MasterIO:
                 self.__SetFault("TCP Socket.connect failed. Verify IP Address and Port.",0x01)
             else:
                 self.__SetState("Connected")
-            finally:
+            finally:                          
                 self.__ConnectAttempt += 1
         elif self.__ConnectAttempt == 3:
             self.__SetState("ExitwithFault")
@@ -95,18 +95,18 @@ class MasterIO:
     #Camera Streaming started over UDP
     def INIT(self):    
         if self.__MasterState == "Connected":
-            self.__CommandID = 0x10
+            self.__CommandID = b'\x10'
             self.__SetState("Intialized")
     
     #Gather Input Sensor Data from ROV
     def GET(self):
         if self.__MasterState == "Initialized":
-            self.__CommandID = 0x20
+            self.__CommandID = b'\x20'
            
     #Update Output Data from User Station
     def UPDATE(self):
         if self.__MasterState == "Initialized":
-            self.__CommandID = 0x30
+            self.__CommandID =b'\x30'
 
     #Emergency Stop
     def ESTOP(self):
@@ -120,18 +120,19 @@ class MasterIO:
     def __MasterTCPCommunication(self):
 
         while(self.__MasterThreadFlag == false):
-            if self.__CommandID == 0x10: ##INIT
-                self.__MasterSocketTCP.send("")
+            Mymessa
+            if self.__CommandID == b'\x10': ##INIT
+                self.__MasterSocketTCP.send()
                
 
-            elif self.__CommandID == 0x20: ## GET
+            elif self.__CommandID == b'\x20': ## GET
                 self.__MasterSocketTCP.send("")
 
-            elif self.__CommandID == 0x30: ##UPDATE
+            elif self.__CommandID == b'\x20': ##UPDATE
                 self.___MasterSocketTCP.send("")
 
-            if self.__CommandID != 0xFF: ## if Initiated
-                 self.__MasterSocketTCP.recv(1024)
+            if self.__CommandID != 0xFF: ## if Initiated recieve return values
+                 self.__MasterSocketTCP.recv(2048)
 
 
     #Executed by Master UDP Thread
