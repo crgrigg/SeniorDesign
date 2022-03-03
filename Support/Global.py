@@ -1,5 +1,5 @@
 
-MasterDictionary = {
+MemMap = {
                       "MotorX1": {"ObjectID": 1,"MotorID": 1,"Speed":  1234},
                       "MotorX2": {"ObjectID": 1,"MotorID": 2,"Speed":  1234},
                       "MotorY1": {"ObjectID": 1,"MotorID": 3,"Speed":  1234},
@@ -11,3 +11,5 @@ MasterDictionary = {
                      "UltraSensor4":{"ObjectID": 4,"SensorID": 1,"Data": 0}
                       }
 
+
+CurrentImage = ""
