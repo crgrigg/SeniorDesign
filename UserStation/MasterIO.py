@@ -1,7 +1,9 @@
 
 import socket
 import threading
-from bitarray import bitarray
+import pickle
+import queue
+
 
 #Author: Charles Griggs, Jay Franko
 #Date:  February 18, 2022
@@ -14,61 +16,55 @@ class MasterIO:
     ###############Class Defined Values #####################
     ######PRIVATE
    
-    __ConnectAttempt = 0
-    __FaultMessage = ""     #Allows user to read fault messages from Master Connection
-    __FaultID = 0x00        # Used to identify the fault detected
-    __MasterState = "Start" #Defines current status of Master Connection System
-    __MasterSocketTCP = ""  #Client TCP Socket to be used by the program 
-    __MasterSocketUDP = ""  #Client Socket used by Master to gather streaming data
-    __MasterTCPPort = 4000  #Port Number Used to Define
-    __MasterUDPPort = 8000  # Class Initializes 
-    __ObjectID = 0xFF       #ID of object 
-    __ObjectOffset = 0      #
-
-
-
-    __MasterThreadFlag = false #Control Threads for Asychronous execution
-    __MasterTCPThread = ""     #Thread to control TCP Connection
-    __MasterUDPThread = ""     #Thread to control UDP Connection
-
-    # User Connection Signals
-    #  The first byte of communication will be a control command
-    # INIT - 0x10   Initialize on board data and send to user. Master will then intialize data based on this input
-    #           -Formatted Set of all data
-    # UPDATE - 0x20 Update output signals from Master to Slave
-    # GET   - 0x30  Retrieve Inputs Data from Slave and send to Master
-    # ESTOP - 0x00   Emergency Stop all process  ## Can you Stop process?
-    # CLOSE - 0xF0   End Communication
-    __CommandID = b'\xFF'
-
-
-    __UDPData = 0 # Holds the data recieved over UDP
-    __TCPData = 0 # Holds the data recieved over TCP
-
+  
     ###
 
     #################  Methods ###################
     #####CONSTRUCTOR
     def __init__(self,MasterAddr = '127.0.0.1',MasterPort = 4000, MasterStreamPort = 8000,SlaveAddr = '127.0.0.1'):
+           
+           self.__MasterState = "Start" #Defines current status of Master Connection System
+           self.__ConnectAttempt = 0
+           self.__FaultMessage = ""     #Allows user to read fault messages from Master Connection
+           self.__FaultID = 0x00        # Used to identify the fault detected
+           
+
            self.__MasterAddr = MasterAddr
            self.__SlaveAddr = SlaveAddr
            self.__MasterTCPPort = MasterPort
            self.__MasterUDPPort = MasterStreamPort
-    #Set State  (don't know why i did this)
-    def __SetState(self, StateString):
-        self.__MasterState = StateString
-    #Set Fault
-    def __SetFault(self,FaultMessage,ID):
-        self.__Faul
-        tMessage = FaultMessage
-        self._FaultID = ID
+           #Client TCP Socket to be used by the program 
+           self.__MasterSocketTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+           #Client Socket used by Master to gather streaming data
+           self. __MasterSocketUDP = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+           
+           # User Connection Signals
+           #  The first byte of communication will be a control command
+           # INIT  -   b'\x10'   Initialize on board data and send to user. Master will then intialize data based on this input
+           #           -Formatted Set of all data
+           # UPDATE - b'\x20' Update output signals from Master to Slave
+           # GET   -  b'\x30'  Retrieve Inputs Data from Slave and send to Master
+           # ESTOP -  b'\xFF'   Emergency Stop all process  ## Can you Stop process?
+           # CLOSE -  b'\xA0'   End Communication
+           self.__CommandID = queue.PriorityQueue() #Emergency Commmand Takes Priority
+           self.__ReturnID = b''
+           self.__SendMessage = ''
+           self.__RecieveMessage = ''
 
+
+           #Thread Management Values
+           self.__MasterThreadFlag = false #Control Threads for Asychronous execution
+           self.__MasterTCPThread = threading.Thread(target=self.__MasterTCPCommunication)
+           self.__MasterUDPThread = threading.Thread(target=self.__MasterUDPCommunication)
+           
+
+        
+   
     #######PUBLIC
     #
     def MasterConnect(self):
          ##Create Socket and Attempt Connection
-        if self.MasterState == "Start" and self.__ConnectAttempt != 3:
-            self.__MasterSocketTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if self.MasterState == "Start" and self.__ConnectAttempt != 3: 
             try:
                 self.__MasterSocketTCP.connect((self.__SlaveAddr,self.__MasterPort))
             except socket.error:
@@ -83,8 +79,6 @@ class MasterIO:
         
         ## Begin Communication Threads
         if self.MasterState == "Connected":
-            self.__MasterTCPThread = threading.Thread(target=self.__MasterTCPCommunication)
-            self.__MasterUDPThread = threading.Thread(target=self.__MasterUDPCommunication)
             self.__MasterTCPThread.start()
             self.__MasterUDPThread.start()
       
@@ -95,7 +89,7 @@ class MasterIO:
     #Camera Streaming started over UDP
     def INIT(self):    
         if self.__MasterState == "Connected":
-            self.__CommandID = b'\x10'
+            self.__CommandID.
             self.__SetState("Intialized")
     
     #Gather Input Sensor Data from ROV
@@ -114,25 +108,21 @@ class MasterIO:
         self.__SetFault("EmergencyStop",0x00)
         self.__CommandID = 0x00
    
-        
+     #Set State  (don't know why i did this)
+    def __SetState(self, StateString):
+        self.__MasterState = StateString
+    #Set Fault
+    def __SetFault(self,FaultMessage,ID):
+        self.__Faul
+        tMessage = FaultMessage
+        self._FaultID = ID
 
     #Executed by Master TCP Thread Continuously
     def __MasterTCPCommunication(self):
 
         while(self.__MasterThreadFlag == false):
-            Mymessa
-            if self.__CommandID == b'\x10': ##INIT
-                self.__MasterSocketTCP.send()
-               
 
-            elif self.__CommandID == b'\x20': ## GET
-                self.__MasterSocketTCP.send("")
-
-            elif self.__CommandID == b'\x20': ##UPDATE
-                self.___MasterSocketTCP.send("")
-
-            if self.__CommandID != 0xFF: ## if Initiated recieve return values
-                 self.__MasterSocketTCP.recv(2048)
+          self.__SendMessage.append(CommandID)
 
 
     #Executed by Master UDP Thread
