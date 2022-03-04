@@ -5,36 +5,80 @@ motorPin = 12
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(motorPin, GPIO.OUT)
-pi_pwm = GPIO.PWM(motorPin, 200)
-#pi_pwm.ChangeDutyCycle(20)
-pi_pwm.start(0)
-pi_pwm.ChangeDutyCycle(40)
-sleep(3)
 
+#Test1
+#----------------------------------
+# pi_pwm = GPIO.PWM(motorPin, 16000)
+# #pi_pwm.ChangeDutyCycle(20)
+# pi_pwm.start(50) #was at 0
+# #pi_pwm.ChangeDutyCycle(50)
+# sleep(3)
+# 
+# pi_pwm.ChangeDutyCycle(100)
+# sleep(3)
+# 
+# pi_pwm.ChangeDutyCycle(0)
+# sleep(3)
+# 
+# while True:
+#     i = 1
+#     while i<100:
+#         print(i)
+#         
+#         pi_pwm.ChangeDutyCycle(i)
+#         
+#         sleep(3)
+#         i += 1
+#         
+#----------------------------------------------------------------
+
+pi_pwm = GPIO.PWM(motorPin, 4725)
+# #pi_pwm.ChangeDutyCycle(20)
+pi_pwm.start(100) #need this line
+pi_pwm.ChangeDutyCycle(50)
+sleep(3)
+#
 pi_pwm.ChangeDutyCycle(0)
 sleep(3)
-
-pi_pwm.ChangeDutyCycle(20)
+#  
+pi_pwm.ChangeDutyCycle(100)
 sleep(3)
 
 while True:
     i = 0
-    while i<50:
+    while i<100:
         print(i)
         
         pi_pwm.ChangeDutyCycle(i)
-        sleep(0.05)
-        i += 0.02
-    #for duty in range(0, 101, 1):
-     #   pi_pwm.ChangeDutyCycle(duty)
-      #  sleep(0.01)
-    #sleep(0.5)
-    
-    #pi_pwm.ChangeDutyCycle(10)
-    #sleep(2)
-    #pi_pwm.ChangeDutyCycle(75)
-    
-    #for duty in range(100, -1, -1):
-     #   pi_pwm.ChangeDutyCycle(duty)
-      #  sleep(0.01)
-    #sleep(0.5)
+        
+        sleep(5)
+        i += 7
+        
+#---------------------------------------
+# pi_pwm = GPIO.PWM(motorPin, 4725)
+# pi_pwm.ChangeFrequency(500000)
+# sleep(3)
+# pi_pwm.ChangeFrequency(1000000)
+# sleep(3)
+# 
+# pi_pwm.ChangeFrequency(4725)
+# # #pi_pwm.ChangeDutyCycle(20)
+# pi_pwm.start(100) #need this line
+# # pi_pwm.ChangeDutyCycle(50)
+# # sleep(3)
+# # 
+# # pi_pwm.ChangeDutyCycle(100)
+# # sleep(3)
+# #  
+# # pi_pwm.ChangeDutyCycle(0)
+# # sleep(3)
+# 
+# while True:
+#     i = 10
+#     while i<100:
+#         print(i)
+#         
+#         pi_pwm.ChangeDutyCycle(i)
+#         
+#         sleep(10)
+#         i += 1
