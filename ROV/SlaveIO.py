@@ -1,4 +1,8 @@
 import Rpi.GPIO
+import serial
 
-def IOUpdate():
+class SlaveIO:
+    
+    def __init__(self):
 
+       
