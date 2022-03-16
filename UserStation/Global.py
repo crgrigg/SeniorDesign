@@ -14,7 +14,7 @@ MemMap = {
                      "UltraSensor3":{"ObjectID": 4,"SensorID": 1,"Distance": 0},
                      "UltraSensor4":{"ObjectID": 4,"SensorID": 1,"Distance": 0},
                       "Camera" : {"ObjectID": 5, "Enable": 0, "Resolution":""}
-           }
+}
 
 # Global Memory to Map Xbox Controller Inputs to other Threads
 ControllerMap = {
@@ -24,7 +24,3 @@ ControllerMap = {
                     "D_Pad":{"Up":0,"Down":0,"Left":0,"Right":0},
                     "Stick":{"Left":{"ValueX":0,"ValueY":0},"Right":{"ValueX":0,"ValueY":0}}
 }
-
-#Contains Video Data Gathered over UDP connections
- VideoMap = ''
- 
