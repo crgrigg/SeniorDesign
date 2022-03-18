@@ -53,7 +53,7 @@ class MasterIO:
 
 
            #Thread Management Values
-           self.__MasterThreadFlag = false #Control Threads for Asychronous execution
+           self.__MasterThreadFlag = False #Control Threads for Asychronous execution
            self.__MasterTCPThread = threading.Thread(target=self.__MasterTCPCommunication)
            self.__MasterUDPThread = threading.Thread(target=self.__MasterUDPCommunication)
            
@@ -120,7 +120,7 @@ class MasterIO:
     #Executed by Master TCP Thread Continuously
     def __MasterTCPCommunication(self):
 
-        while(self.__MasterThreadFlag == false):
+        while(self.__MasterThreadFlag == False):
 
           self.__SendMessage.append(CommandID)
 
@@ -128,6 +128,6 @@ class MasterIO:
     #Executed by Master UDP Thread
     def __MasterUDPCommunication(self):
         
-        while(self.__MasterThreadFlag == false):
+        while(self.__MasterThreadFlag == False):
             #Add UDP Communication Information
             self.__UDPData = self.__MasterSocketUDP.recvfrom()
