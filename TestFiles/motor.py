@@ -1,84 +1,97 @@
 import RPi.GPIO as GPIO
 from time import sleep
+import socket, pickle
+import MicroToHertz
+import pigpio
 
-motorPin = 12
+pi = pigpio.pi()
+
+# Socket Create
+server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+host_name  = socket.gethostname()
+host_ip = socket.gethostbyname(host_name)
+#print('HOST IP:',host_ip)
+port = 8000
+socket_address = (("169.254.146.18", 8000))
+
+# Socket Bind
+server_socket.bind(socket_address)
+
+# Socket Listen
+server_socket.listen(5)
+print("LISTENING AT:",socket_address)
+
+
+motorPinL = 18
+motorPinR = 16
 GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(motorPin, GPIO.OUT)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(motorPinL, GPIO.OUT)
+GPIO.setup(motorPinR, GPIO.OUT)
 
-#Test1
-#----------------------------------
-# pi_pwm = GPIO.PWM(motorPin, 16000)
-# #pi_pwm.ChangeDutyCycle(20)
-# pi_pwm.start(50) #was at 0
-# #pi_pwm.ChangeDutyCycle(50)
+# pi_pwm = GPIO.PWM(motorPin, 1000)
 # sleep(3)
 # 
-# pi_pwm.ChangeDutyCycle(100)
+# pi_pwm.start(50) 
 # sleep(3)
-# 
-# pi_pwm.ChangeDutyCycle(0)
-# sleep(3)
-# 
-# while True:
-#     i = 1
-#     while i<100:
+
+# i = 1000
+# while i > 667:
+#         pi_pwm.ChangeFrequency(i)
 #         print(i)
-#         
-#         pi_pwm.ChangeDutyCycle(i)
-#         
-#         sleep(3)
-#         i += 1
-#         
-#----------------------------------------------------------------
+#         i-=1
 
-pi_pwm = GPIO.PWM(motorPin, 4725)
-# #pi_pwm.ChangeDutyCycle(20)
-pi_pwm.start(100) #need this line
-pi_pwm.ChangeDutyCycle(50)
+pi.set_servo_pulsewidth(motorPinL, 2000)
+pi.set_servo_pulsewidth(motorPinR, 2000)
 sleep(3)
-#
-pi_pwm.ChangeDutyCycle(0)
-sleep(3)
-#  
-pi_pwm.ChangeDutyCycle(100)
+pi.set_servo_pulsewidth(motorPinL, 1000)
+pi.set_servo_pulsewidth(motorPinR, 1000)
 sleep(3)
 
+i = 1000
+while i < 1500:
+    print(i)
+    pi.set_servo_pulsewidth(motorPinL, i)
+    pi.set_servo_pulsewidth(motorPinR, i)
+    i+=1
+    
+sleep(3)
+
+client_socket,addr = server_socket.accept()
+print('GOT CONNECTION FROM:',addr)
+
+frequency = 0
 while True:
-    i = 0
-    while i<100:
-        print(i)
-        
-        pi_pwm.ChangeDutyCycle(i)
-        
-        sleep(5)
-        i += 7
-        
-#---------------------------------------
-# pi_pwm = GPIO.PWM(motorPin, 4725)
-# pi_pwm.ChangeFrequency(500000)
-# sleep(3)
-# pi_pwm.ChangeFrequency(1000000)
-# sleep(3)
-# 
-# pi_pwm.ChangeFrequency(4725)
-# # #pi_pwm.ChangeDutyCycle(20)
-# pi_pwm.start(100) #need this line
-# # pi_pwm.ChangeDutyCycle(50)
-# # sleep(3)
-# # 
-# # pi_pwm.ChangeDutyCycle(100)
-# # sleep(3)
-# #  
-# # pi_pwm.ChangeDutyCycle(0)
-# # sleep(3)
-# 
-# while True:
-#     i = 10
-#     while i<100:
-#         print(i)
-#         
-#         pi_pwm.ChangeDutyCycle(i)
-#         
-#         sleep(10)
-#         i += 1
+    if client_socket:
+        frequency = client_socket.recv(4096)
+        dictionary = pickle.loads(frequency)
+        speed = dictionary["Stick"]["Left"]["ValueY"]
+        #turn = dictionary["Stick"]["Left"]["ValueX"]
+        trigL = dictionary["Trigger"]["Left"]
+        trigR = dictionary["Trigger"]["Right"]
+        integer = MicroToHertz.conversion(speed)
+        intL = integer
+        intR = integer
+        if integer > 1500:
+            intR = intR - (2 * (trigR  * (intR - 1500)))
+            intL = intL - (2 * (trigL  * (intL - 1500)))
+        if integer < 1500:
+            intR = intR + (2 * (trigR  * (1500 - intR)))
+            intL = intL + (2 * (trigL  * (1500 - intL)))
+                
+#         if integer > 1500:
+#             if turn > 0:
+#                 intR = intR - (turn * (intR - 1500))
+#             if turn < 0:
+#                 intL = intL - (abs(turn) * (intL - 1500))
+#         if integer < 1500:
+#             if turn > 0:
+#                 intR = intR + (turn * (1500 - intR))
+#             if turn < 0:
+#                 intL = intL + (abs(turn) * (1500 - intL))
+        print("Left: ",intL)
+        print("Right: ",intR)
+        pi.set_servo_pulsewidth(motorPinL, intL)
+        pi.set_servo_pulsewidth(motorPinR, intR)
+
+server_socket.close()
