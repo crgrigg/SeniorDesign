@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 from time import sleep
 import socket, pickle
-import MicroToHertz
+import ToMicro
 import pigpio
 
 pi = pigpio.pi()
@@ -69,7 +69,7 @@ while True:
         #turn = dictionary["Stick"]["Left"]["ValueX"]
         trigL = dictionary["Trigger"]["Left"]
         trigR = dictionary["Trigger"]["Right"]
-        integer = MicroToHertz.conversion(speed)
+        integer = ToMicro.conversion(speed)
         intL = integer
         intR = integer
         if integer > 1500:
