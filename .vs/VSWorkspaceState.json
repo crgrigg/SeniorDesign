@@ -3,7 +3,10 @@
     "",
     "\\ROV",
     "\\Support",
+    "\\TestFiles",
+    "\\TestFiles\\resources",
     "\\UserStation"
   ],
+  "SelectedNode": "\\UserStation\\MotorClient.py",
   "PreviewInSolutionExplorer": false
 }

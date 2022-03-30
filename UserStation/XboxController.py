@@ -86,6 +86,12 @@ def get_signals():
                     print(event.y)
                     print(event.value)
                     print(event.dir)
+        sleep(2)
+        data = pickle.dumps(Global.ControllerMap)
+        print(data)
+        client_socket.sendall(data)
 
+
+get_signals()
 
    
