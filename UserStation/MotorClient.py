@@ -5,6 +5,7 @@ import threading
 import client
 import Global
 from time import sleep
+
 # create socket
 client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 host_ip = '169.254.253.85' # paste your server ip address here
