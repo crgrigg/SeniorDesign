@@ -2,6 +2,8 @@
 
 #Describes Current Data of the system for the purpose of communication with the
 # Global Data Shared by threads
+VidFrame = ''
+
 MemMap = {
                     
                      "DepthSensor": {"ObjectID": 2,"Depth": 1234}, 

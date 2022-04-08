@@ -1,22 +1,39 @@
 from time import sleep
 import sys
 
+import VidThread
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QLabel
 
 
-app = QApplication(sys.argv)
+def MyApplication():
+    app = QApplication(sys.argv)
 
-window = QWidget()
-window.setWindowTitle('PyQt5 App')
-window.setGeometry(100,200,280,80)
-window.move(60,15)
+    window = QWidget()
+    window.setWindowTitle('PyQt5 App')
+    window.setGeometry(1000,1600,1500,800)
+    window.move(50,50)
 
-helloMsg = QLabel('<h1>Hello World!</h1>',parent=window)
-helloMsg.move(60,15)
+    Btn1 = QPushButton("Auto")
+    Btn1.
+   
+    Video = QLabel(parent=window)
+    Video.setGeometry(800,800,800,800)
+    Video.setText("Hello World")
 
-window.show()
-sleep(10)
+    MyLayout = QVBoxLayout()
+    MyLayout.addWidget(Btn1)
+    
+    MyLayout.addWidget(Video)
 
-sys.exit(app.exec_())
+
+    window.setLayout(MyLayout)
+    window.show()
+    sleep(10)
+    sys.exit(app.exec_())
+
+MyApplication()
