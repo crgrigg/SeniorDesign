@@ -10,6 +10,7 @@ import MotorClient
 import MasterDB
 import time
 import XboxControllerPWM
+from time import sleep
 
 MotorThread = threading.Thread(target = MotorClient.motor_client)
 MotorThread.start()
@@ -44,13 +45,23 @@ VideoLabelCol = 0
 Videolabel =Label(win)
 Videolabel.grid(row=VideoLabelRow, column=VideoLabelCol)
 
-#Temperature    
-figure = Figure(figsize=(5,4),dpi=100)
-plot = figure.add_subplot(1,1,1)
-plot.plot(0.5,0.3,color="red",marker="o",linestyle="")
-canvas = FigureCanvasTkAgg(figure,root)
-canvas.get_tk_widget().grid(row=0,column=0)
+#figure = Figure(figsize=(2,3),dpi=100)
+##plot = figure.add_subplot(1,1,1)
+#plot.plot(0.5,0.3,color="red",marker="o",linestyle="")
+#canvas = FigureCanvasTkAgg(figure,win)
+#canvas.get_tk_widget().grid(row=0,column=200)
 
+#figure1 = Figure(figsize=(2,3),dpi=100)
+#plot1 = figure1.add_subplot(1,1,1)
+#plot1.plot(0.5,0.3,color="red",marker="o",linestyle="")
+#canvas1 = FigureCanvasTkAgg(figure1,win)
+#canvas1.get_tk_widget().grid(row=200,column=200)
+
+#figure2 = Figure(figsize=(2,3),dpi=100)
+#plot2 = figure2.add_subplot(1,1,1)
+#plot2.plot(0.5,0.3,color="red",marker="o",linestyle="")
+#canvas2 = FigureCanvasTkAgg(figure2,win)
+#canvas2.get_tk_widget().grid(row=200,column=0)
 
 data = b""
 payload_size = struct.calcsize("Q")
@@ -65,45 +76,58 @@ payload_size = struct.calcsize("Q")
 	show_frames()
 	win.mainloop() """
 
+x = [0.1,0.2,0.3]
+y = [-0.1,-0.2,-0.3]
+Xvalue = 0.4
+Yvalue = -0.4
+
 def show_frames():
 
     #global data
     global client_socket, win, Videolabel, data, payload_size
     global Database,DbTimeGap,DbTimer
+    global canvas,canvas1,canvas2
+    global x,y
+    global Xvalue,Yvalue
+     
+    while True:
+        #if (time.time() - DbTimer) > DbTimeGap:
+         #   Database.WriteIO()
+          #  SensorData = Database.ReadIORange()
+         
+        #global data
+        while len(data) < payload_size:
+            packet = client_socket.recv(4*1024) # 4K
+            if not packet: break
+            data+=packet
+        packed_msg_size = data[:payload_size]
+        data = data[payload_size:]
+        msg_size = struct.unpack("Q",packed_msg_size)[0]
 
-    SensorData = 0
+        while len(data) < msg_size:
+            data += client_socket.recv(4*1024)
+        frame_data = data[:msg_size]
+        data  = data[msg_size:]
+        frame = pickle.loads(frame_data)
 
-    if (time.time() - DbTimer) > DbTimeGap:
-        Database.WriteIO()
-        SensorData = Database.ReadIORange()
+        #cv2.imshow("RECEIVING VIDEO",frame)s
 
-    #global data
-    while len(data) < payload_size:
-        packet = client_socket.recv(4*1024) # 4K
-        if not packet: break
-        data+=packet
-    packed_msg_size = data[:payload_size]
-    data = data[payload_size:]
-    msg_size = struct.unpack("Q",packed_msg_size)[0]
+        # Get the latest frame and convert into Image
+        cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(cv2image)
+        # Convert image to PhotoImage
+        imgtk = ImageTk.PhotoImage(image = img)
+        Videolabel.imgtk = imgtk
+        Videolabel.configure(image=imgtk)
 
-    while len(data) < msg_size:
-        data += client_socket.recv(4*1024)
-    frame_data = data[:msg_size]
-    data  = data[msg_size:]
-    frame = pickle.loads(frame_data)
 
-    #cv2.imshow("RECEIVING VIDEO",frame)s
+        
+        
+        # Repeat after an interval to capture continiously
+        Videolabel.after(1, show_frames)
 
-    # Get the latest frame and convert into Image
-    cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-    img = Image.fromarray(cv2image)
-    # Convert image to PhotoImage
-    imgtk = ImageTk.PhotoImage(image = img)
-    Videolabel.imgtk = imgtk
-    Videolabel.configure(image=imgtk)
-
-    # Repeat after an interval to capture continiously
-    Videolabel.after(1, show_frames)
+#ActiveThread = threading.Thread(target = show_frames)
+#ActiveThread.start()
 
 #computer_visual()
 show_frames()
