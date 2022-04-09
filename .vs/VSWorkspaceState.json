@@ -3,7 +3,11 @@
     "",
     "\\ROV",
     "\\Support",
+    "\\TestFiles",
+    "\\TestFiles\\Adafruit_MCP3008.egg-info",
+    "\\TestFiles\\resources",
     "\\UserStation"
   ],
+  "SelectedNode": "\\UserStation\\MotorClient.py",
   "PreviewInSolutionExplorer": false
 }

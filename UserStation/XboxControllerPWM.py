@@ -1,11 +1,14 @@
 import XInput as X
+import socket
 from time import sleep
 import Global
-
+import pickle
+import MasterDB
 d = Global.ControllerMap
 
 def get_signals():
     global ControllerMap
+    
     while X.get_connected()[0] == True:
         ControllerEvents = X.get_events()
         for event in ControllerEvents:
@@ -15,7 +18,7 @@ def get_signals():
 
                 elif event.type == X.EVENT_BUTTON_PRESSED:
                     if event.button == 'A':
-                        d["Buttons"]["A"] = event.button
+                        d["Buttons"]["A"] = 1
                         print(d["Buttons"]["A"])
                         #print(event.button)
                     elif event.button == 'B':
@@ -59,13 +62,13 @@ def get_signals():
                         print(d["Bumper"]["Left"])
                         #print(event.button)
                     elif event.button == 'RIGHT_SHOULDER':
-                        d["Bumper"]["Right"] = event.button
+                        d["Bumper"]["Right"] = 1
                         print(d["Bumper"]["Right"])
                         #print(event.button)
 
                 elif event.type == X.EVENT_BUTTON_RELEASED:
                     if event.button == 'A':
-                        d["Buttons"]["A"] = event.button
+                        d["Buttons"]["A"] = 0
                         print(d["Buttons"]["A"])
                         #print(event.button)
                     elif event.button == 'B':
@@ -109,29 +112,32 @@ def get_signals():
                         print(d["Bumper"]["Left"])
                         #print(event.button)
                     elif event.button == 'RIGHT_SHOULDER':
-                        d["Bumper"]["Right"] = event.button
+                        d["Bumper"]["Right"] = 0
                         print(d["Bumper"]["Right"])
                         #print(event.button)
 
                 elif event.type == X.EVENT_TRIGGER_MOVED:
                     if event.trigger == X.LEFT:
+                        Global.ControllerMap["Trigger"]["Left"] = event.value
                         print(event.trigger)
                         print(event.value)
                     elif event.trigger == X.RIGHT:
+                        Global.ControllerMap["Trigger"]["Right"] = event.value
                         print(event.trigger)
                         print(event.value)
                 elif event.type == X.EVENT_STICK_MOVED:
                     if event.stick == X.LEFT:
-                        d["Stick"]["Left"]["ValueX"] = 5
-                        d["Stick"]["Left"]["ValueY"] = 4
+                        d["Stick"]["Left"]["ValueX"] = event.x
+                        d["Stick"]["Left"]["ValueY"] = event.y
                         print(event.x)
                         print(event.y)
                         print(event.value)
                         print(event.dir)
                     elif event.stick == X.RIGHT:
-                        Global.ControllerMap["Stick"]["Right"]["ValueX"] = 3
-                        Global.ControllerMap["Stick"]["Right"]["ValueY"] = 2
+                        Global.ControllerMap["Stick"]["Right"]["ValueX"] = event.x
+                        Global.ControllerMap["Stick"]["Right"]["ValueY"] = event.y
                         print(Global.ControllerMap["Stick"]["Right"]["ValueX"])
                         print(Global.ControllerMap["Stick"]["Right"]["ValueY"])
                         print(event.value)
                         print(event.dir)
+   

@@ -2,19 +2,17 @@
 
 #Describes Current Data of the system for the purpose of communication with the
 # Global Data Shared by threads
+VidFrame = ''
+
 MemMap = {
-                     "MotorX1": {"ObjectID": 1,"MotorID": 1,"Speed":  1234},
-                     "MotorX2": {"ObjectID": 1,"MotorID": 2,"Speed":  1234},
-                     "MotorY1": {"ObjectID": 1,"MotorID": 3,"Speed":  1234},
                     
                      "DepthSensor": {"ObjectID": 2,"Depth": 1234}, 
                      "TempSensor": {"ObjectID": 3,"Temp":0},
                      "UltraSensor1":{"ObjectID": 4,"SensorID": 1,"Distance": 0},
                      "UltraSensor2":{"ObjectID": 4,"SensorID": 1,"Distance": 0},
-                     "UltraSensor3":{"ObjectID": 4,"SensorID": 1,"Distance": 0},
-                     "UltraSensor4":{"ObjectID": 4,"SensorID": 1,"Distance": 0},
-                      "Camera" : {"ObjectID": 5, "Enable": 0, "Resolution":""}
-}
+                     "UltraSensor3":{"ObjectID": 4,"SensorID": 1,"Distance": 0}
+ 
+           }
 
 # Global Memory to Map Xbox Controller Inputs to other Threads
 ControllerMap = {
