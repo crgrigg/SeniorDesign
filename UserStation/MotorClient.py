@@ -2,31 +2,29 @@
 import socket, pickle, struct
 import XboxControllerPWM
 import threading
-import client
+#import client
 import Global
 from time import sleep
 
-# create socket
-client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-host_ip = '169.254.253.85' # paste your server ip address here
-port = 8002
+def motor_client():
+    # create socket
+    client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    host_ip = '169.254.253.85' # paste your server ip address here
+    port = 8000
 
-client_socket.connect((host_ip,port)) # a tuple
+    client_socket.connect((host_ip,port)) # a tuple
 
 
-myThread = threading.Thread(target=XboxControllerPWM.get_signals)
-myComputer = threading.Thread(target = client.computer_visual)
-myThread.start()
-myComputer.start()
-data = 0
-while True:
-    data = pickle.dumps(Global.ControllerMap)
-  
-    client_socket.sendall(data)
-    value = client_socket.recv(8192)
-    value = pickle.loads(value)
-    seconds = time.time()
-    local_time = time.ctime(seconds)
+    myThread = threading.Thread(target = XboxControllerPWM.get_signals)
+    #myComputer = threading.Thread(target = client)
+    myThread.start()
+    #myComputer.start()
+    data = 0
+    while True:
+        data = pickle.dumps(Global.ControllerMap)
+        #print(data)
+        client_socket.sendall(data)
+        value = client_socket.recv(8192)
+        print(pickle.loads(value))
 
- 
-client_socket.close()
+    client_socket.close()
