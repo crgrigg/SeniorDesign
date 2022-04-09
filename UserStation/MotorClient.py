@@ -4,8 +4,7 @@ import XboxControllerPWM
 import threading
 import client
 import Global
-#import MasterDB
-import time
+from time import sleep
 
 # create socket
 client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
