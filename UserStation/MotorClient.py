@@ -11,14 +11,10 @@ def motor_client():
     client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     host_ip = '169.254.253.85' # paste your server ip address here
     port = 8000
-
     client_socket.connect((host_ip,port)) # a tuple
 
 
-    myThread = threading.Thread(target = XboxControllerPWM.get_signals)
-    #myComputer = threading.Thread(target = client)
-    myThread.start()
-    #myComputer.start()
+   
     data = 0
     while True:
         data = pickle.dumps(Global.ControllerMap)

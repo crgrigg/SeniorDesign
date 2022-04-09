@@ -3,11 +3,12 @@ import socket
 from time import sleep
 import Global
 import pickle
+import MasterDB
 d = Global.ControllerMap
 
 def get_signals():
     global ControllerMap
-   
+    
     while X.get_connected()[0] == True:
         ControllerEvents = X.get_events()
         for event in ControllerEvents:
