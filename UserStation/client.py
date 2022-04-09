@@ -45,89 +45,112 @@ VideoLabelCol = 0
 Videolabel =Label(win)
 Videolabel.grid(row=VideoLabelRow, column=VideoLabelCol)
 
-#figure = Figure(figsize=(2,3),dpi=100)
-##plot = figure.add_subplot(1,1,1)
-#plot.plot(0.5,0.3,color="red",marker="o",linestyle="")
-#canvas = FigureCanvasTkAgg(figure,win)
-#canvas.get_tk_widget().grid(row=0,column=200)
+#Graphs
+figure = plt.figure(figsize=(4,6),dpi=100)
+TempPlot = figure.add_subplot(2,1,1)
+TempPlot.set_xlabel("Hello")
+TempPlot.set_ylabel("Y")
+TempPlot.set_title("Temperature[C]")
+PressurePlot = figure.add_subplot(2,1,2)
+PressurePlot.set_xlabel("Hello")
+PressurePlot.set_ylabel("Y")
+PressurePlot.set_title("Pressure[Pascals]")
+canvas = FigureCanvasTkAgg(figure,win)
+canvas.get_tk_widget().grid(row=0,column=0)
 
-#figure1 = Figure(figsize=(2,3),dpi=100)
-#plot1 = figure1.add_subplot(1,1,1)
-#plot1.plot(0.5,0.3,color="red",marker="o",linestyle="")
-#canvas1 = FigureCanvasTkAgg(figure1,win)
-#canvas1.get_tk_widget().grid(row=200,column=200)
+figure1 = plt.figure(figsize=(12,3),dpi=100)
+USLeft = figure1.add_subplot(1,3,1)
+USLeft.set_xlabel("Hello")
+USLeft.set_ylabel("Y")
+USLeft.set_title("Temperature[C]")
+USRight = figure1.add_subplot(1,3,2)
+USRight.set_xlabel("Hello")
+USRight.set_ylabel("Y")
+USRight.set_title("Temperature[C]")
+USBottom = figure1.add_subplot(1,3,3)
+USBottom.set_xlabel("Hello")
+USBottom.set_ylabel("Y")
+USBottom.set_title("Temperature[C]")
+canvas1 = FigureCanvasTkAgg(figure1,win)
+canvas1.get_tk_widget().grid(row=300,column=0)
 
-#figure2 = Figure(figsize=(2,3),dpi=100)
-#plot2 = figure2.add_subplot(1,1,1)
-#plot2.plot(0.5,0.3,color="red",marker="o",linestyle="")
-#canvas2 = FigureCanvasTkAgg(figure2,win)
-#canvas2.get_tk_widget().grid(row=200,column=0)
+plt.subplots_adjust(left=0.2,bottom=0.1,right=0.9,top=0.9,wspace=0.4,hspace=0.4)
+
 
 data = b""
 payload_size = struct.calcsize("Q")
-
-""" def computer_visual():
-	print("FUCKKKKKKKKKKKKKKKKKKKKKKKKKK")
-	global win
-
-    # create socket
-
-    #while True:
-	show_frames()
-	win.mainloop() """
 
 x = [0.1,0.2,0.3]
 y = [-0.1,-0.2,-0.3]
 Xvalue = 0.4
 Yvalue = -0.4
 
+def show_graphs():
+    
+    global plot,canvas,canvas1,canvas2,x,y,figure,figure1,figure2,Xvalue,Yvalue
+    while True:
+        x.append(Xvalue)
+        y.append(Yvalue)
+
+        TempPlot.plot(x,y,color="blue",marker="x",linestyle="")
+        PressurePlot.plot(x,y,color="blue",marker="x",linestyle="")
+        USLeft.plot(x,y,color="blue",marker="x",linestyle="")
+        USRight.plot(x,y,color="blue",marker="x",linestyle="")
+        USBottom.plot(x,y,color="blue",marker="x",linestyle="")
+
+        Xvalue += 0.1
+        Yvalue -= 0.1
+        canvas.draw()
+        canvas1.draw()
+        sleep(1)
+     
+
+
+
 def show_frames():
 
     #global data
     global client_socket, win, Videolabel, data, payload_size
-    global Database,DbTimeGap,DbTimer
-    global canvas,canvas1,canvas2
-    global x,y
-    global Xvalue,Yvalue
+  
      
-    while True:
+ 
         #if (time.time() - DbTimer) > DbTimeGap:
          #   Database.WriteIO()
           #  SensorData = Database.ReadIORange()
          
-        #global data
-        while len(data) < payload_size:
-            packet = client_socket.recv(4*1024) # 4K
-            if not packet: break
-            data+=packet
-        packed_msg_size = data[:payload_size]
-        data = data[payload_size:]
-        msg_size = struct.unpack("Q",packed_msg_size)[0]
+    #global data
+    while len(data) < payload_size:
+        packet = client_socket.recv(4*1024) # 4K
+        if not packet: break
+        data+=packet
+    packed_msg_size = data[:payload_size]
+    data = data[payload_size:]
+    msg_size = struct.unpack("Q",packed_msg_size)[0]
 
-        while len(data) < msg_size:
-            data += client_socket.recv(4*1024)
-        frame_data = data[:msg_size]
-        data  = data[msg_size:]
-        frame = pickle.loads(frame_data)
+    while len(data) < msg_size:
+        data += client_socket.recv(4*1024)
+    frame_data = data[:msg_size]
+    data  = data[msg_size:]
+    frame = pickle.loads(frame_data)
 
-        #cv2.imshow("RECEIVING VIDEO",frame)s
+    #cv2.imshow("RECEIVING VIDEO",frame)s
 
-        # Get the latest frame and convert into Image
-        cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-        img = Image.fromarray(cv2image)
-        # Convert image to PhotoImage
-        imgtk = ImageTk.PhotoImage(image = img)
-        Videolabel.imgtk = imgtk
-        Videolabel.configure(image=imgtk)
+    # Get the latest frame and convert into Image
+    cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+    img = Image.fromarray(cv2image)
+    # Convert image to PhotoImage
+    imgtk = ImageTk.PhotoImage(image = img)
+    Videolabel.imgtk = imgtk
+    Videolabel.configure(image=imgtk)
 
 
         
         
         # Repeat after an interval to capture continiously
-        Videolabel.after(1, show_frames)
+    Videolabel.after(1, show_frames)
 
-#ActiveThread = threading.Thread(target = show_frames)
-#ActiveThread.start()
+ActiveThread = threading.Thread(target = show_graphs)
+ActiveThread.start()
 
 #computer_visual()
 show_frames()
