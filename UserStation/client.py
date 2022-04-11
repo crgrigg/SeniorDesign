@@ -105,11 +105,11 @@ def show_graphs():
         y.append(Yvalue)
 
        
-        TempPlot.plot(Database.TempValue,Database.TimeValue,color="blue",marker="x",linestyle="")
-        PressurePlot.plot(Database.PressureValue,Database.TimeValue,color="blue",marker="x",linestyle="")
-        USLeft.plot(Database.USLeft,Database.TimeValue,color="blue",marker="x",linestyle="")
-        USRight.plot(Database.USRight,Database.TimeValue,color="blue",marker="x",linestyle="")
-        USBottom.plot(Database.USDown,Database.TimeValue,color="blue",marker="x",linestyle="")
+        TempPlot.plot(Database.TempValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        PressurePlot.plot(Database.PressureValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        USLeft.plot(Database.ULValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        USRight.plot(Database.URValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        USBottom.plot(Database.UBValue,Database.TimeValue,color="black",marker="x",linestyle="-")
 
         Xvalue += 0.1
         Yvalue -= 0.1
@@ -118,16 +118,16 @@ def show_graphs():
         sleep(1)
      
 
-
+DbTimer = time.time()
 
 def show_frames():
 
     #global data
-    global client_socket, win, Videolabel, data, payload_size
+    global client_socket, win, Videolabel, data, payload_size, DbTimer
   
     Database = MasterDB.MasterDB()
     DbTimeGap = .4 #How often to update Database Data
-    DbTimer = time.time()
+    #DbTimer = time.time()
      
  
     if (time.time() - DbTimer) > DbTimeGap:
@@ -158,11 +158,9 @@ def show_frames():
     imgtk = ImageTk.PhotoImage(image = img)
     Videolabel.imgtk = imgtk
     Videolabel.configure(image=imgtk)
-
-
+    
         
-        
-        # Repeat after an interval to capture continiously
+    # Repeat after an interval to capture continiously
     Videolabel.after(1, show_frames)
 
 ActiveThread = threading.Thread(target = show_graphs)

@@ -1,13 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\ROV",
     "\\Support",
-    "\\TestFiles",
-    "\\TestFiles\\Adafruit_MCP3008.egg-info",
-    "\\TestFiles\\resources",
     "\\UserStation"
   ],
-  "SelectedNode": "\\UserStation\\GraphExample.py",
+  "SelectedNode": "\\UserStation\\client.py",
   "PreviewInSolutionExplorer": false
 }
