@@ -105,11 +105,11 @@ def show_graphs():
         y.append(Yvalue)
 
        
-        TempPlot.plot(Database.TempValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        PressurePlot.plot(Database.PressureValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        USLeft.plot(Database.ULValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        USRight.plot(Database.URValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        USBottom.plot(Database.UBValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        #TempPlot.plot(Database.TempValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        #PressurePlot.plot(Database.PressureValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        #USLeft.plot(Database.ULValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        #USRight.plot(Database.URValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        #USBottom.plot(Database.UBValue,Database.TimeValue,color="black",marker="x",linestyle="-")
 
         Xvalue += 0.1
         Yvalue -= 0.1
@@ -131,7 +131,7 @@ def show_frames():
      
  
     if (time.time() - DbTimer) > DbTimeGap:
-        Database.WriteIO()
+        #Database.WriteIO()
         DbTimer = time.time()
          
     #global data
