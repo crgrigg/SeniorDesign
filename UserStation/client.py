@@ -1,6 +1,7 @@
 # lets make the client code
 import cv2, socket, pickle, struct
 from tkinter import *
+import tkinter
 from PIL import Image, ImageTk
 import threading
 import matplotlib.pyplot as plt
@@ -31,7 +32,10 @@ client_socket.connect((host_ip,port)) # a tuple
 win = Tk()
 
 # Set the size of the window
-win.geometry("1080x720")
+#win.geometry("1920x1080")
+win.attributes("-topmost", True)
+win.title("Underwater ROV")
+win.configure(background='orange')
 
 
 VideoLabelRow = 0
@@ -43,36 +47,42 @@ Videolabel =Label(win)
 Videolabel.grid(row=VideoLabelRow, column=VideoLabelCol)
 
 #Graphs
-figure = plt.figure(figsize=(4,6),dpi=100)
+figure = plt.figure(figsize=(5.5,6),dpi=100)
 TempPlot = figure.add_subplot(2,1,1)
-TempPlot.set_xlabel("Hello")
-TempPlot.set_ylabel("Y")
-TempPlot.set_title("Temperature[C]")
+TempPlot.set_xlabel("time [s]")
+TempPlot.set_ylabel("Temperature [C]")
+TempPlot.set_title("Temperature", fontweight='bold')
+TempPlot.set_facecolor('orange')
 PressurePlot = figure.add_subplot(2,1,2)
-PressurePlot.set_xlabel("Hello")
-PressurePlot.set_ylabel("Y")
-PressurePlot.set_title("Pressure[Pascals]")
+PressurePlot.set_xlabel("time[s]")
+PressurePlot.set_ylabel("Pressure [kPa]")
+PressurePlot.set_title("Pressure", fontweight='bold')
+PressurePlot.set_facecolor('orange')
+figure.set_facecolor('orange')
 canvas = FigureCanvasTkAgg(figure,win)
-canvas.get_tk_widget().grid(row=0,column=0)
+canvas.get_tk_widget().grid(row=0,column=100)
 
-figure1 = plt.figure(figsize=(12,3),dpi=100)
+figure1 = plt.figure(figsize=(12,4),dpi=100)
 USLeft = figure1.add_subplot(1,3,1)
-USLeft.set_xlabel("Hello")
-USLeft.set_ylabel("Y")
-USLeft.set_title("Temperature[C]")
+USLeft.set_xlabel("time [s]")
+USLeft.set_ylabel("Distance [mm]")
+USLeft.set_title("Left Ultrasonic", fontweight='bold')
+USLeft.set_facecolor('orange')
 USRight = figure1.add_subplot(1,3,2)
-USRight.set_xlabel("Hello")
-USRight.set_ylabel("Y")
-USRight.set_title("Temperature[C]")
+USRight.set_xlabel("time [s]")
+USRight.set_ylabel("Distance [mm]")
+USRight.set_title("Right Ultrasonic", fontweight='bold')
+USRight.set_facecolor('orange')
 USBottom = figure1.add_subplot(1,3,3)
-USBottom.set_xlabel("Hello")
-USBottom.set_ylabel("Y")
-USBottom.set_title("Temperature[C]")
+USBottom.set_xlabel("time [s]")
+USBottom.set_ylabel("Distance [mm]")
+USBottom.set_title("Bottom Ultrasonic", fontweight='bold')
+USBottom.set_facecolor('orange')
+figure1.set_facecolor('orange')
 canvas1 = FigureCanvasTkAgg(figure1,win)
 canvas1.get_tk_widget().grid(row=300,column=0)
 
-plt.subplots_adjust(left=0.2,bottom=0.1,right=0.9,top=0.9,wspace=0.4,hspace=0.4)
-
+plt.subplots_adjust(left=0.1,bottom=0.1,right=0.9,top=0.9,wspace=0.4,hspace=0.4)
 
 data = b""
 payload_size = struct.calcsize("Q")
