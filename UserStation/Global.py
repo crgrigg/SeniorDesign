@@ -6,11 +6,11 @@ VidFrame = ''
 
 MemMap = {
                     
-                     "DepthSensor": {"ObjectID": 2,"Depth": 1234}, 
-                     "TempSensor": {"ObjectID": 3,"Temp":0},
-                     "UltraSensor1":{"ObjectID": 4,"SensorID": 1,"Distance": 0},
-                     "UltraSensor2":{"ObjectID": 4,"SensorID": 1,"Distance": 0},
-                     "UltraSensor3":{"ObjectID": 4,"SensorID": 1,"Distance": 0}
+                     "DepthSensor": {"ObjectID": 2,"Depth": 1234.0}, 
+                     "TempSensor": {"ObjectID": 3,"TempC":0.0,"TempF":0.0},
+                     "UltraSensor1":{"ObjectID": 4,"SensorID": 1,"Distance": 0.0},
+                     "UltraSensor2":{"ObjectID": 4,"SensorID": 1,"Distance": 0.0},
+                     "UltraSensor3":{"ObjectID": 4,"SensorID": 1,"Distance": 0.0}
  
            }
 
@@ -22,3 +22,5 @@ ControllerMap = {
                     "D_Pad":{"Up":0,"Down":0,"Left":0,"Right":0},
                     "Stick":{"Left":{"ValueX":0,"ValueY":0},"Right":{"ValueX":0,"ValueY":0}}
 }
+
+

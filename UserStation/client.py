@@ -27,9 +27,6 @@ host_ip = '169.254.253.85'
 port = 9997
 client_socket.connect((host_ip,port)) # a tuple
 
-Database = MasterDB.MasterDB()
-DbTimeGap = .4 #How often to update Database Data
-DbTimer = time.time()
 
 # Create an instance of TKinter Window or frame
 win = Tk()
@@ -98,15 +95,21 @@ Yvalue = -0.4
 def show_graphs():
     
     global plot,canvas,canvas1,canvas2,x,y,figure,figure1,figure2,Xvalue,Yvalue
+    
+    Database = MasterDB.MasterDB()
+    DbTimeGap = .4 #How often to update Database Data
+    DbTimer = time.time()
+
     while True:
         x.append(Xvalue)
         y.append(Yvalue)
 
-        TempPlot.plot(x,y,color="purple",marker="",linestyle="-")
-        PressurePlot.plot(x,y,color="purple",marker="",linestyle="-")
-        USLeft.plot(x,y,color="purple",marker="",linestyle="-")
-        USRight.plot(x,y,color="purple",marker="",linestyle="-")
-        USBottom.plot(x,y,color="purple",marker="",linestyle="-")
+       
+        TempPlot.plot(Database.TempValue,Database.TimeValue,color="blue",marker="x",linestyle="")
+        PressurePlot.plot(Database.PressureValue,Database.TimeValue,color="blue",marker="x",linestyle="")
+        USLeft.plot(Database.USLeft,Database.TimeValue,color="blue",marker="x",linestyle="")
+        USRight.plot(Database.USRight,Database.TimeValue,color="blue",marker="x",linestyle="")
+        USBottom.plot(Database.USDown,Database.TimeValue,color="blue",marker="x",linestyle="")
 
         Xvalue += 0.1
         Yvalue -= 0.1
@@ -122,11 +125,14 @@ def show_frames():
     #global data
     global client_socket, win, Videolabel, data, payload_size
   
+    Database = MasterDB.MasterDB()
+    DbTimeGap = .4 #How often to update Database Data
+    DbTimer = time.time()
      
  
-        #if (time.time() - DbTimer) > DbTimeGap:
-         #   Database.WriteIO()
-          #  SensorData = Database.ReadIORange()
+    if (time.time() - DbTimer) > DbTimeGap:
+        Database.WriteIO()
+        DbTimer = time.time()
          
     #global data
     while len(data) < payload_size:
