@@ -19,6 +19,10 @@ MotorThread.start()
 ControllerThread = threading.Thread(target = XboxControllerPWM.get_signals)
 ControllerThread.start()
 
+  
+Database = MasterDB.MasterDB()
+DbTimeGap = .4 #How often to update Database Data
+DbTimer = time.time()
 
 
 
@@ -95,21 +99,17 @@ Yvalue = -0.4
 def show_graphs():
     
     global plot,canvas,canvas1,canvas2,x,y,figure,figure1,figure2,Xvalue,Yvalue
-    
-    Database = MasterDB.MasterDB()
-    DbTimeGap = .4 #How often to update Database Data
-    DbTimer = time.time()
-
+    global Database
     while True:
         x.append(Xvalue)
         y.append(Yvalue)
 
        
-        #TempPlot.plot(Database.TempValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        #PressurePlot.plot(Database.PressureValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        #USLeft.plot(Database.ULValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        #USRight.plot(Database.URValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        #USBottom.plot(Database.UBValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        TempPlot.plot(Database.TempValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        PressurePlot.plot(Database.PressureValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        USLeft.plot(Database.ULValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        USRight.plot(Database.URValue,Database.TimeValue,color="black",marker="x",linestyle="-")
+        USBottom.plot(Database.UBValue,Database.TimeValue,color="black",marker="x",linestyle="-")
 
         Xvalue += 0.1
         Yvalue -= 0.1
@@ -124,7 +124,7 @@ def show_frames():
 
     #global data
     global client_socket, win, Videolabel, data, payload_size, DbTimer
-  
+    global Database
     Database = MasterDB.MasterDB()
     DbTimeGap = .4 #How often to update Database Data
     #DbTimer = time.time()
