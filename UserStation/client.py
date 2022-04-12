@@ -91,28 +91,17 @@ plt.subplots_adjust(left=0.1,bottom=0.1,right=0.9,top=0.9,wspace=0.4,hspace=0.4)
 data = b""
 payload_size = struct.calcsize("Q")
 
-x = [0.1,0.2,0.3]
-y = [-0.1,-0.2,-0.3]
-Xvalue = 0.4
-Yvalue = -0.4
-
 def show_graphs():
     
     global plot,canvas,canvas1,canvas2,x,y,figure,figure1,figure2,Xvalue,Yvalue
     global Database
     while True:
-        x.append(Xvalue)
-        y.append(Yvalue)
-
-       
+        
         TempPlot.plot(Database.TempValue,Database.TimeValue,color="black",marker="x",linestyle="-")
         PressurePlot.plot(Database.PressureValue,Database.TimeValue,color="black",marker="x",linestyle="-")
         USLeft.plot(Database.ULValue,Database.TimeValue,color="black",marker="x",linestyle="-")
         USRight.plot(Database.URValue,Database.TimeValue,color="black",marker="x",linestyle="-")
         USBottom.plot(Database.UBValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-
-        Xvalue += 0.1
-        Yvalue -= 0.1
         canvas.draw()
         canvas1.draw()
         sleep(1)
