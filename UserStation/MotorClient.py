@@ -15,12 +15,11 @@ def motor_client():
     port = 8000
     client_socket.connect((host_ip,port)) # a tuple
    
-   
     data = 0
     while True:
         data = pickle.dumps(Global.ControllerMap)
         client_socket.sendall(data)
         value = client_socket.recv(8192)
         Global.MemMap = pickle.loads(value)
-        print(Global.MemMap)
+       
     client_socket.close()

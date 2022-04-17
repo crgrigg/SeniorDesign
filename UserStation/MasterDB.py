@@ -15,7 +15,7 @@ class MasterDB():
 
     def __init__(self):
         self.dataInit()
-        self.Database = sqlite3.connect('Data.db')
+        self.Database = sqlite3.connect(self.DBName)
         self.Cursor = self.Database.cursor()
         self.TempValue = []
         self.PressureValue = []
@@ -23,6 +23,7 @@ class MasterDB():
         self.URValue = []
         self.UBValue = []
         self.TimeValue = []
+        #self.CreateIOTable()
 
     def Update_Present(self):
         if self.UpdateFlag == 1:
@@ -40,16 +41,13 @@ class MasterDB():
     def ReadIORange(self):
          #Data = self.Cursor.execute(''' SELECT * FROM SensorData 
          #                               WHERE  timestamp >= ((SELECT MAX(timestamp) FROM SensorData) - %d)''' % self.Range)
-         String = "SELECT * FROM SensorData WHERE  timestamp >= ((SELECT MAX(timestamp) FROM SensorData) -" + str(self.Range)+")"
-         self.UpdateFlag = 0
-        
-         self.Values = pd.read_sql(String,self.Database)
-         self.TempValue = self.Values.Temp.values.tolist()
-         self.PressureValue = self.Values.Pressure.values.tolist()
-         self.ULValue = self.Values.UltrasonicLeft.values.tolist()
-         self.URValue = self.Values.UltrasonicRight.values.tolist()
-         self.UBValue = self.Values.UltrasonicDown.values.tolist()
-         self.TimeValue = self.Values.TimeStamp.values.tolist()
+         String = "SELECT * FROM SensorData WHERE  timestamp >= ((SELECT MAX(timestamp) FROM SensorData) -" + str(self.Range) + ")"
+         self.NewValues = pd.read_sql(String,self.Database)
+         if self.NewValues.empty:
+            self.NewValues = self.Values
+         else:
+            self.Values = self.NewValues
+         return self.NewValues
 
     #Write Sensor Data to IO Table
     def WriteIO(self):
@@ -62,7 +60,7 @@ class MasterDB():
                                     Data["UltraSensor1"]["Distance"],
                                     Data["UltraSensor2"]["Distance"],
                                     Data["UltraSensor3"]["Distance"]))
-        self.ReadIORange()
+        self.Database.commit()
     
     #Read Sensor Data (all)
     def ReadIO(self):
@@ -95,15 +93,11 @@ class MasterDB():
         self.Database.commit()
 
 
-
 #i = 0 
 #Database = MasterDB()
-#while i < 12:
+#while i < 20:
 #    Database.WriteIO()
-#    i += 1
-#    sleep(1)
-
-#while True:
-#    sleep(1)
 #    Value = Database.ReadIORange()
-#    print(Value)
+#    i += 1
+#    sleep(5)
+#    print(Value.Temp.values.tolist())
