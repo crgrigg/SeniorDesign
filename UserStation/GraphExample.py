@@ -10,75 +10,48 @@ import MasterDB
 import time
 from time import sleep
 import XboxControllerPWM
-
-
-x = [0.1,0.2,0.3]
-y = [-0.1,-0.2,-0.3]
-Xvalue = 0.4
-Yvalue = -0.4
+import Global
+import random 
 
 
 root = Tk()
 root.geometry("1080x1080")
 
+TempValue = [1,1,1]
+i = 0
+
+Database =  MasterDB.MasterDB()
+
 
 figure = plt.figure(figsize=(4.5,6),dpi=100)
 TempPlot = figure.add_subplot(2,1,1)
+
 TempPlot.set_xlabel("Hello")
 TempPlot.set_ylabel("Y")
 TempPlot.set_title("Temperature[C]")
-PressurePlot = figure.add_subplot(2,1,2)
-PressurePlot.set_xlabel("Hello")
-PressurePlot.set_ylabel("Y")
-PressurePlot.set_title("Pressure[Pascals]")
-canvas = FigureCanvasTkAgg(figure,root)
+TempPlot.set_ylim(-5,40)
+lines = TempPlot.plot([],[])[0]
+canvas = FigureCanvasTkAgg(figure,master=root)
 canvas.get_tk_widget().grid(row=0,column=0)
 
-figure1 = plt.figure(figsize=(12,3),dpi=100)
-USLeft = figure1.add_subplot(1,3,1)
-USLeft.set_xlabel("Hello")
-USLeft.set_ylabel("Y")
-USLeft.set_title("Temperature[C]")
-USRight = figure1.add_subplot(1,3,2)
-USRight.set_xlabel("Hello")
-USRight.set_ylabel("Y")
-USRight.set_title("Temperature[C]")
-USBottom = figure1.add_subplot(1,3,3)
-USBottom.set_xlabel("Hello")
-USBottom.set_ylabel("Y")
-USBottom.set_title("Temperature[C]")
-canvas1 = FigureCanvasTkAgg(figure1,root)
-canvas1.get_tk_widget().grid(row=300,column=0)
+def plottingPoints(): 
+    global canvas, TempPlot,TempValue,lines,i,figure
+    TempPlot.plot(TempValue,color="black",marker="x",linestyle="-")      
+    canvas.draw()
+    
+    print("I am running!")
+    root.after(1000,plottingPoints)
 
-plt.subplots_adjust(left=0.1,bottom=0.1,right=0.9,top=0.9,wspace=0.5,hspace=0.4)
-
-
-
-
-
-def plottingPoints():
-     
-    global plot,canvas,x,y,figure,Xvalue,Yvalue
-    while True:
-        x.append(Xvalue)
-        y.append(Yvalue)
-
-        TempPlot.plot(x,y,color="blue",marker="x",linestyle="")
-        PressurePlot.plot(x,y,color="blue",marker="x",linestyle="")
-        USLeft.plot(x,y,color="blue",marker="x",linestyle="")
-        USRight.plot(x,y,color="blue",marker="x",linestyle="")
-        USBottom.plot(x,y,color="blue",marker="x",linestyle="")
-
-        Xvalue += 0.1
-        Yvalue -= 0.1
-        canvas.draw()
-        canvas1.draw()
-        sleep(1)
-
-MyThread = threading.Thread(target=plottingPoints)
-MyThread.start()
-
-
-
-
+def MakeData():
+    global Database,TempValue,i
+    Database.WriteIO()
+    Value = Database.ReadIORange()
+    print(len(Value.Temp.values.tolist()))
+    #print(Value.Temp.values.tolist())
+    TempValue.append()
+    print(len(TempValue))
+    i += 1
+    root.after(20,MakeData)
+MakeData()
+plottingPoints()
 root.mainloop()

@@ -6,12 +6,24 @@ from PIL import Image, ImageTk
 import threading
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+from matplotlib import animation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import MotorClient
 import MasterDB
 import time
 import XboxControllerPWM
 from time import sleep
+import Global
+import DataSetCapture
+
+#Enable to save dataset values
+DataSetActive = False
+DataCaptureTime = time.time()
+DataTimeGap = .25
+
+AutoDetect = False
+cascade_src = 'C:/Users/rober/OneDrive/Desktop/Images/Models/full_lbp_classifier/cascade.xml'
+model_cascade = cv2.CascadeClassifier (cascade_src) #Using the cascade classifier
 
 MotorThread = threading.Thread(target = MotorClient.motor_client)
 MotorThread.start()
@@ -19,18 +31,17 @@ MotorThread.start()
 ControllerThread = threading.Thread(target = XboxControllerPWM.get_signals)
 ControllerThread.start()
 
-  
-Database = MasterDB.MasterDB()
-DbTimeGap = .4 #How often to update Database Data
-DbTimer = time.time()
-
-
-
 client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 host_ip = '169.254.253.85'
 port = 9997
 client_socket.connect((host_ip,port)) # a tuple
 
+ListSize = 50
+TempValue = []
+PressureValue = []
+ULValue = []
+URValue = []
+UBValue = []
 
 # Create an instance of TKinter Window or frame
 win = Tk()
@@ -57,11 +68,13 @@ TempPlot.set_xlabel("time [s]")
 TempPlot.set_ylabel("Temperature [C]")
 TempPlot.set_title("Temperature", fontweight='bold')
 TempPlot.set_facecolor('orange')
+TempPlot.set_ylim(10,30)
 PressurePlot = figure.add_subplot(2,1,2)
 PressurePlot.set_xlabel("time[s]")
 PressurePlot.set_ylabel("Pressure [kPa]")
 PressurePlot.set_title("Pressure", fontweight='bold')
 PressurePlot.set_facecolor('orange')
+PressurePlot.set_ylim(10,30)
 figure.set_facecolor('orange')
 canvas = FigureCanvasTkAgg(figure,win)
 canvas.get_tk_widget().grid(row=0,column=100)
@@ -91,38 +104,84 @@ plt.subplots_adjust(left=0.1,bottom=0.1,right=0.9,top=0.9,wspace=0.4,hspace=0.4)
 data = b""
 payload_size = struct.calcsize("Q")
 
-def show_graphs():
-    
-    global plot,canvas,canvas1,canvas2,x,y,figure,figure1,figure2,Xvalue,Yvalue
-    global Database
-    while True:
-        
-        TempPlot.plot(Database.TempValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        PressurePlot.plot(Database.PressureValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        USLeft.plot(Database.ULValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        USRight.plot(Database.URValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        USBottom.plot(Database.UBValue,Database.TimeValue,color="black",marker="x",linestyle="-")
-        canvas.draw()
-        canvas1.draw()
-        sleep(1)
-     
+Database = MasterDB.MasterDB()
 
-DbTimer = time.time()
+
+NoGraph = False
+
+
+def show_graphs():
+   
+    global plot,canvas,canvas1,figure,figure1,win
+    global TempValue,PressureValue,ULValue,URValue,UBValue,ListSize,TempLine
+    global Videolabel,DataSetActive,AutoDetect,NoGraph
+    
+    if DataSetActive == False and NoGraph == False:
+        while True:
+           # print(Global.MemMap["UltraSensor1"]["Distance"])
+            print(Global.MemMap["UltraSensor2"]["Distance"])
+            #print( Global.MemMap["UltraSensor3"]["Distance"])
+            TempValue.append(Global.MemMap["TempSensor"]["TempC"])
+            PressureValue.append(Global.MemMap["DepthSensor"]["Depth"])
+            ULValue.append(Global.MemMap["UltraSensor1"]["Distance"])
+            URValue.append(Global.MemMap["UltraSensor2"]["Distance"])
+            UBValue.append(Global.MemMap["UltraSensor3"]["Distance"])
+
+            if len(TempValue) > ListSize:
+                TempValue.pop(0)
+                PressureValue.pop(0)
+                ULValue.pop(0)
+                URValue.pop(0)
+                UBValue.pop(0)
+    
+                TempPlot.clear()
+                TempPlot.set_xlabel("time [s]")
+                TempPlot.set_ylabel("Temperature [C]")
+                TempPlot.set_title("Temperature", fontweight='bold')
+                TempPlot.set_facecolor('orange')
+        
+                #PressurePlot.clear()
+                #PressurePlot.set_xlabel("time[s]")
+                #PressurePlot.set_ylabel("Pressure [kPa]")
+                #PressurePlot.set_title("Pressure", fontweight='bold')
+                #PressurePlot.set_facecolor('orange')
+
+                #USLeft.clear()
+                #USRight.set_xlabel("time [s]")
+                #USRight.set_ylabel("Distance [mm]")
+                #USRight.set_title("Right Ultrasonic", fontweight='bold')
+                #USRight.set_facecolor('orange')
+
+                #USRight.clear()
+                #USRight.set_xlabel("time [s]")
+                #USRight.set_ylabel("Distance [mm]")
+                #USRight.set_title("Right Ultrasonic", fontweight='bold')
+                #USRight.set_facecolor('orange')
+
+                #USBottom.clear()
+                #USRight.set_xlabel("time [s]")
+                #USRight.set_ylabel("Distance [mm]")
+                #USRight.set_title("Right Ultrasonic", fontweight='bold')
+                #USRight.set_facecolor('orange')
+
+            TempPlot.plot(TempValue,color="black",marker="x",linestyle="-")
+            #PressurePlot.plot(PressureValue,color="black",marker="",linestyle="-")
+            #USLeft.plot(ULValue,color="black",marker="",linestyle="-")
+            #USRight.plot(URValue,color="black",marker="",linestyle="-")
+            #USBottom.plot(UBValue,color="black",marker="",linestyle="-")
+
+            canvas.draw()
+            #canvas1.draw()
+            sleep(1)
+   
+
 
 def show_frames():
 
     #global data
     global client_socket, win, Videolabel, data, payload_size, DbTimer
-    global Database
-    Database = MasterDB.MasterDB()
-    DbTimeGap = .4 #How often to update Database Data
-    #DbTimer = time.time()
-     
- 
-    if (time.time() - DbTimer) > DbTimeGap:
-        #Database.WriteIO()
-        DbTimer = time.time()
-         
+    global Database, DataTimeGap, DataSetActive,DataCaptureTime
+    
     #global data
     while len(data) < payload_size:
         packet = client_socket.recv(4*1024) # 4K
@@ -141,20 +200,32 @@ def show_frames():
     #cv2.imshow("RECEIVING VIDEO",frame)s
 
     # Get the latest frame and convert into Image
+   
+    #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    #model = model_cascade.detectMultiScale(gray, 1.1, 1)
+
+    #for (x, y, w, h) in model:
+    #    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+    
     cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
     img = Image.fromarray(cv2image)
     # Convert image to PhotoImage
+    if DataSetActive == True and time.time() - DataCaptureTime >= DataTimeGap:
+        DataSetCapture.DataSetSave(cv2image)
+        DataCaptureTime = time.time()
     imgtk = ImageTk.PhotoImage(image = img)
     Videolabel.imgtk = imgtk
     Videolabel.configure(image=imgtk)
-    
+   
         
     # Repeat after an interval to capture continiously
     Videolabel.after(1, show_frames)
 
-ActiveThread = threading.Thread(target = show_graphs)
-ActiveThread.start()
+
+GraphThread = threading.Thread(target=show_graphs)
+GraphThread.start()
 
 #computer_visual()
 show_frames()
+
 win.mainloop()
