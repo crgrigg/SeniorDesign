@@ -242,7 +242,6 @@ def show_graphs():
         UltrasonicSensor3Value.configure(text=UltraSonic3Str)
         sleep(.1)
 
-
 def show_frames():
 
     #global data
@@ -274,14 +273,31 @@ def show_frames():
         model = model_cascade.detectMultiScale(gray, 1.1, 1)
         AvgCenterMassX = 0
         AvgCenterMassY = 0
-        NumCoord = 0
+        NumRect = 0
+        FirstYCenter = 0
+        LastYCenter = 0
         for (x, y, w, h) in model:
+            if NumRect == 0:
+                FirstYCenter = (y+h)/2
+            LastYCenter = (y+h)/2
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             AvgCenterMassX += (x+w)/2
             AvgCenterMassY += (y+h)/2
-            NumCoord += 1
-        AvgCenterMassX = AvgCenterMassX/NumCoord
-        AvgCenterMassY = AvgCenterMassY/NumCoord
+            NumRect += 1
+        AvgCenterMassX = AvgCenterMassX/NumRect
+        AvgCenterMassY = AvgCenterMassY/NumRect
+
+        # vertical-ish pipe
+        Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.2;
+        if AvgCenterMassX >= 320:
+            Global.ControllerMap["Bumper"]["Right"] = .1;
+        elif AvgCenterMassX < 320:
+            Global.ControllerMap["Bumper"]["Left"] = .1;
+
+        # horizontal pipe
+        if FirstYCenter <= LastYCenter + 75 and FirstYCenter >= LastYCenter - 75 and NumRect >= 4:
+            Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.3;
+            Global.ControllerMap["Bumper"]["Left"] = .5;
 
     cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
     img = Image.fromarray(cv2image)
