@@ -22,6 +22,7 @@ DataCaptureTime = time.time()
 DataTimeGap = .25
 
 AutoMode = Global.AutoMode
+AutoState = 0
 cascade_src = 'C:/Users/rober/OneDrive/Desktop/Images/classifier/cascade.xml'
 model_cascade = cv2.CascadeClassifier (cascade_src) #Using the cascade classifier
 
@@ -54,10 +55,10 @@ Videolabel.grid(row=0, column=0,rowspan = 10,columnspan=10)
 ROVStatusRow = 11
 ROVStatusCol = 0
 RowIndex = 2
-ColumnSpace = 4
+ColumnSpace = 2
 SensorRow = ROVStatusRow
 SensorCol = ROVStatusCol + ColumnSpace +100
-SensorColSpace = 4
+SensorColSpace = 2
 
 ROVStatus = Label(win,bg = "orange",font="bold")
 ROVStatus.grid(row=ROVStatusRow,column = ROVStatusCol, columnspan=3)
@@ -82,21 +83,12 @@ VerticleMotorValue.configure(text ="")
 RowIndex += 1
 
 #Left Motor Speed
-LeftMotorSpeed = Label(win,bg="orange")
-LeftMotorSpeed.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
-LeftMotorSpeed.configure(text ="Left Motor Speed")
-LeftMotorValue = Label(win,bg="orange")
-LeftMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
-LeftMotorValue.configure(text ="")
-RowIndex += 1
-
-#Right Motor Speed
-RightMotorSpeed = Label(win,bg="orange")
-RightMotorSpeed.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
-RightMotorSpeed.configure(text ="Right Motor Speed")
-RightMotorValue = Label(win,bg="orange")
-RightMotorValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol  + ColumnSpace)
-RightMotorValue.configure(text ="")
+HorizontalMotorSpeed = Label(win,bg="orange")
+HorizontalMotorSpeed.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
+HorizontalMotorSpeed.configure(text ="Horizontal Motor Speed")
+HorizontalMotorValue = Label(win,bg="orange")
+HorizontalMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
+HorizontalMotorValue.configure(text ="")
 RowIndex += 1
 
 #Vertical Motor Speed
@@ -196,25 +188,51 @@ def show_graphs():
    
     global plot,win
     global Videolabel,DataSetActive,AutoDetect,NoGraph
-    while True:   
-        LeftMotorStr = str("")
-        RightMotorStr = str("")
-        VerticalMotorStr = str("")
-        if AutoMode: AutoModeStr = "Enabled"
+    global AutoState
+    
+   
+    while True: 
+        
+        if Global.ControllerMap["START"]["Value"] == 0 and AutoState == 0:
+            AutoState = 0
+        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 0:
+            AutoState = 1
+        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 1:
+            AutoState = 1
+        elif Global.ControllerMap["START"]["Value"] == 0 and AutoState == 1:
+            AutoState = 2
+        elif Global.ControllerMap["START"]["Value"] == 0 and AutoState == 2:
+            AutoState = 2
+        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 2:
+            AutoState = 3
+        elif Global.ControllerMap["START"]["Value"] == 0 and AutoState == 3:
+            AutoState = 3
+        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 3:
+            AutoState = 0
+            Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0
+            Global.ControllerMap["Trigger"]["Right"] = 0
+            Global.ControllerMap["Trigger"]["Left"] = 0
+
+        if AutoState == 1 or AutoState == 2:
+            Global.AutoMode = True
+        else: Global.AutoMode = False
+
+        Global.ControllerMap["START"]["Value"] == 0 and AutoState == 0
+
+        HorizontalMotorStr = str(Global.ControllerMap["Stick"]["Left"]["ValueY"])
+       
+        if Global.AutoMode: AutoModeStr = "Enabled"
         else: AutoModeStr = "Disabled"
         CPUTempStr = str(Global.MemMap["CPU"]["Temp"])
         ROVErrStr = str(Global.MemMap["Error"]["Message"])
-
         TempStr = str(Global.MemMap["TempSensor"]["TempF"])
-        PressureStr = str(Global.MemMap["DepthSensor"]["Depth"])
+        PressureStr = str(Global.MemMap["DepthSensor"]["Depth"] * 4)
         UltraSonic1Str = str(Global.MemMap["UltraSensor1"]["Distance"])
         UltraSonic2Str = str(Global.MemMap["UltraSensor2"]["Distance"])
         UltraSonic3Str = str(Global.MemMap["UltraSensor3"]["Distance"])
         
                 #ROV Status
-        LeftMotorValue.configure(text=LeftMotorStr)
-        RightMotorValue.configure(text=RightMotorStr)
-        VerticleMotorValue.configure(text=VerticalMotorStr)
+        HorizontalMotorValue.configure(text=HorizontalMotorStr)
         AutoModeValue.configure(text=AutoModeStr)
         CPUTempValue.configure(text=CPUTempStr)
         ROVErrorValue.configure(text=ROVErrStr)
@@ -227,12 +245,13 @@ def show_graphs():
         UltrasonicSensor3Value.configure(text=UltraSonic3Str)
         sleep(.1)
 
+AutoModeTimer = 0
 def show_frames():
 
     #global data
     global client_socket, win, Videolabel, data, payload_size, DbTimer
-    global Database, DataTimeGap, DataSetActive,DataCaptureTime
-    
+    global Database, DataTimeGap, DataSetActive,DataCaptureTime,AutoModeTimer
+    global AutoState
     #global data
     while len(data) < payload_size:
         packet = client_socket.recv(4*1024) # 4K
@@ -251,9 +270,9 @@ def show_frames():
  
 
     # Get the latest frame and convert into Image
-
+   
     #If AutoDetecting/ in AutoMode
-    if AutoMode:
+    if Global.AutoMode:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         model = model_cascade.detectMultiScale(gray, 1.1, 1)
         AvgCenterMassX = 0
@@ -269,20 +288,36 @@ def show_frames():
             AvgCenterMassX += (x+w)/2
             AvgCenterMassY += (y+h)/2
             NumRect += 1
-        AvgCenterMassX = AvgCenterMassX/NumRect
-        AvgCenterMassY = AvgCenterMassY/NumRect
-
+        if NumRect != 0:
+            AvgCenterMassX = AvgCenterMassX/NumRect
+            AvgCenterMassY = AvgCenterMassY/NumRect
+            AutoModeTimer = 0
+        elif AutoModeTimer == 0:
+            AutoModeTimer = time.time()
+        elif time.time() - AutoModeTimer > 1:
+            AutoModeTimer = 0
+            Global.AutoMode = False
+            AutoState = 0
         # vertical-ish pipe
-        Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.2;
-        if AvgCenterMassX >= 320:
-            Global.ControllerMap["Bumper"]["Right"] = .1;
-        elif AvgCenterMassX < 320:
-            Global.ControllerMap["Bumper"]["Left"] = .1;
+        Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.15
+        TurnSpeedR = 0 + (1 - 0) * ((AvgCenterMassX - 240) / (480 - 240))
+        TurnSpeedL = 0 + (1 - 0) * ((AvgCenterMassX - 0) / (240 - 0))
+        if AvgCenterMassX >= 240:
+            Global.ControllerMap["Trigger"]["Right"] = TurnSpeedR/2
+            print("Going Right: ",TurnSpeedR)
+        elif AvgCenterMassX < 240:
+            Global.ControllerMap["Trigger"]["Left"] = TurnSpeedL/2
+            print("Going Left: ",TurnSpeedL)
 
         # horizontal pipe
-        if FirstYCenter <= LastYCenter + 75 and FirstYCenter >= LastYCenter - 75 and NumRect >= 4:
-            Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.3;
-            Global.ControllerMap["Bumper"]["Left"] = .5;
+        #if FirstYCenter <= LastYCenter + 75 and FirstYCenter >= LastYCenter - 75 and NumRect >= 4:
+        #    Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.3;
+        #    Global.ControllerMap["Trigger"]["Left"] = .5;
+
+        if Global.AutoMode == False:
+            Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.0
+            Global.ControllerMap["Trigger"]["Right"] = 0
+            Global.ControllerMap["Trigger"]["Left"] = 0
 
     cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
     img = Image.fromarray(cv2image)
@@ -304,5 +339,4 @@ GraphThread.start()
 
 #computer_visual()
 show_frames()
-#show_graphs()
 win.mainloop()
