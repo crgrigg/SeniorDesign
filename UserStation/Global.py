@@ -23,8 +23,8 @@ ControllerMap = {
                     "Trigger":{"Left":0,"Right":0},
                     "Bumper":{"Left":0,"Right":0},
                     "D_Pad":{"Up":0,"Down":0,"Left":0,"Right":0},
-                    "Stick":{"Left":{"ValueX":0,"ValueY":0},"Right":{"ValueX":0,"ValueY":0},
+                    "Stick":{"Left":{"ValueX":0,"ValueY":0},"Right":{"ValueX":0,"ValueY":0}},
                     "START":{"Value": 0}}
-}
+
 
 
