@@ -23,7 +23,7 @@ DataTimeGap = .25
 
 AutoMode = Global.AutoMode
 AutoState = 0
-cascade_src = 'C:/Users/rober/OneDrive/Desktop/Images/classifier/cascade.xml'
+cascade_src = 'C:/Users/jfranko13/OneDrive/Desktop/Images/classifier/cascade.xml'
 model_cascade = cv2.CascadeClassifier (cascade_src) #Using the cascade classifier
 
 MotorThread = threading.Thread(target = MotorClient.motor_client)
@@ -73,16 +73,7 @@ LightStatusValue.grid(row=ROVStatusRow  + RowIndex,column=ROVStatusCol + ColumnS
 LightStatusValue.configure(text="")
 RowIndex += 1
 
-#Verticle Motor Status
-VerticleMotorLock = Label(win,bg="orange")
-VerticleMotorLock.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
-VerticleMotorLock.configure(text ="Vertical Motor Lock")
-VerticleMotorValue = Label(win,bg="orange")
-VerticleMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
-VerticleMotorValue.configure(text ="")
-RowIndex += 1
-
-#Left Motor Speed
+#Horizontal Motor Speed
 HorizontalMotorSpeed = Label(win,bg="orange")
 HorizontalMotorSpeed.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
 HorizontalMotorSpeed.configure(text ="Horizontal Motor Speed")
@@ -91,13 +82,22 @@ HorizontalMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol 
 HorizontalMotorValue.configure(text ="")
 RowIndex += 1
 
-#Vertical Motor Speed
+#Verticle Motor Speed
+VerticleMotorSpeed = Label(win,bg="orange")
+VerticleMotorSpeed.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
+VerticleMotorSpeed.configure(text ="Vertical Motor Speed")
+VerticleMotorValue = Label(win,bg="orange")
+VerticleMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
+VerticleMotorValue.configure(text ="")
+RowIndex += 1
+
+#Vertical Motor Status
 VerticleMotorLock = Label(win,bg="orange")
 VerticleMotorLock.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
-VerticleMotorLock.configure(text ="Vertical Motor Speed")
-VerticleMotorValue = Label(win,bg="orange")
-VerticleMotorValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol  + ColumnSpace)
-VerticleMotorValue.configure(text ="")
+VerticleMotorLock.configure(text ="Vertical Motor Status")
+VerticleMotorLockValue = Label(win,bg="orange")
+VerticleMotorLockValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol  + ColumnSpace)
+VerticleMotorLockValue.configure(text ="")
 RowIndex += 1
 
 #Auto Mode
@@ -112,7 +112,7 @@ RowIndex += 1
 #CPU Temperature
 CPUTempStatus = Label(win,bg="orange")
 CPUTempStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
-CPUTempStatus.configure(text ="CPU Temp")
+CPUTempStatus.configure(text ="CPU Temp [C]")
 CPUTempValue = Label(win,bg="orange")
 CPUTempValue.grid(row = ROVStatusRow + RowIndex , column = ROVStatusCol + ColumnSpace)
 CPUTempValue.configure(text ="")
@@ -136,7 +136,7 @@ SensorData.configure(text="SensorData")
 # Temp Sensor
 TempSensorStatus = Label(win,bg="orange")
 TempSensorStatus.grid(row = SensorRow + RowIndex, column = SensorCol)
-TempSensorStatus.configure(text ="Temperature [Ferenheit]")
+TempSensorStatus.configure(text ="Temperature [F]")
 TempSensorValue = Label(win,bg="orange")
 TempSensorValue.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
 TempSensorValue.configure(text ="")
@@ -145,7 +145,7 @@ RowIndex += 1
 #Pressure
 PressureSensorStatus = Label(win,bg="orange")
 PressureSensorStatus.grid(row = SensorRow + RowIndex, column = SensorCol)
-PressureSensorStatus.configure(text ="Pressure [Pa]")
+PressureSensorStatus.configure(text ="Pressure [kPa]")
 PressureSensorValue = Label(win,bg="orange")
 PressureSensorValue.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
 PressureSensorValue.configure(text ="")
@@ -154,7 +154,7 @@ RowIndex += 1
 #Ultrasonic Sensor 1
 UltrasonicSensor1Status = Label(win,bg="orange")
 UltrasonicSensor1Status.grid(row = SensorRow + RowIndex, column = SensorCol)
-UltrasonicSensor1Status.configure(text ="Left Distance[mm]")
+UltrasonicSensor1Status.configure(text ="Left Distance [mm]")
 UltrasonicSensor1Value = Label(win,bg="orange")
 UltrasonicSensor1Value.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
 UltrasonicSensor1Value.configure(text ="")
@@ -193,6 +193,7 @@ def show_graphs():
    
     while True: 
         
+        #Auto Mode State Machine
         if Global.ControllerMap["START"]["Value"] == 0 and AutoState == 0:
             AutoState = 0
         elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 0:
@@ -219,7 +220,40 @@ def show_graphs():
 
         Global.ControllerMap["START"]["Value"] == 0 and AutoState == 0
 
-        HorizontalMotorStr = str(Global.ControllerMap["Stick"]["Left"]["ValueY"])
+       
+
+        #if Global.ControllerMap["Bumper"]["Right"] == 1:
+        #    Global.MemMap["Vertical Lock"]["Lock"] = "Locked"
+        #else:
+        #    Global.MemMap["Vertical Lock"]["Lock"] = "Unlocked"
+
+        #Vertical Lock State Machine
+        if Global.ControllerMap["Bumper"]["Right"] == 0 and VertState == 0:
+            VertState = 0
+        elif Global.ControllerMap["Bumper"]["Right"] == 1 and VertState == 0:
+            VertState = 1
+        elif Global.ControllerMap["Bumper"]["Right"] == 1 and VertState == 1:
+            VertState = 1
+        elif Global.ControllerMap["Bumper"]["Right"] == 0 and VertState == 1:
+            VertState = 2
+        elif Global.ControllerMap["Bumper"]["Right"] == 0 and VertState == 2:
+            VertState = 2
+        elif Global.ControllerMap["Bumper"]["Right"] == 1 and VertState == 2:
+            VertState = 3
+        elif Global.ControllerMap["Bumper"]["Right"] == 0 and VertState == 3:
+            VertState = 3
+        elif Global.ControllerMap["Bumper"]["Right"] == 1 and VertState == 3:
+            VertState = 0
+
+        if VertState == 1 or VertState == 2:
+            Global.MemMap["Vertical Lock"]["Lock"] = "Locked"
+        else: Global.MemMap["Vertical Lock"]["Lock"] = "Unlocked"
+
+
+        #UI Section Text
+        HorizontalMotorStr = str(Global.ControllerMap["Stick"]["Left"]["ValueY"] * 100) + "%"
+        VericalMotorStr = str(Global.ControllerMap["Stick"]["Right"]["ValueY"] * 100) + "%"
+        VerticalMotorLockStr = Global.MemMap["Vertical Motor"]["Lock"]
        
         if Global.AutoMode: AutoModeStr = "Enabled"
         else: AutoModeStr = "Disabled"
@@ -231,8 +265,10 @@ def show_graphs():
         UltraSonic2Str = str(Global.MemMap["UltraSensor2"]["Distance"])
         UltraSonic3Str = str(Global.MemMap["UltraSensor3"]["Distance"])
         
-                #ROV Status
+        #ROV Status
         HorizontalMotorValue.configure(text=HorizontalMotorStr)
+        VerticalMotorValue.configure(text=VerticalMotorStr)
+        VerticleMotorLockValue.configure(text=VerticalMotorLockStr)
         AutoModeValue.configure(text=AutoModeStr)
         CPUTempValue.configure(text=CPUTempStr)
         ROVErrorValue.configure(text=ROVErrStr)
@@ -299,7 +335,7 @@ def show_frames():
             Global.AutoMode = False
             AutoState = 0
         # vertical-ish pipe
-        Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.15
+        Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.2
         TurnSpeedR = 0 + (1 - 0) * ((AvgCenterMassX - 240) / (480 - 240))
         TurnSpeedL = 0 + (1 - 0) * ((AvgCenterMassX - 0) / (240 - 0))
         if AvgCenterMassX >= 240:
