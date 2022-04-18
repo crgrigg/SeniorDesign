@@ -13,7 +13,8 @@ MemMap = {
                      "UltraSensor2":{"ObjectID": 4,"SensorID": 1,"Distance": 0.0},
                      "UltraSensor3":{"ObjectID": 4,"SensorID": 1,"Distance": 0.0},
                      "CPU":{"ObjectID:":5,"Temp":0.0},
-                     "Error":{"Message":""}
+                     "Error":{"Message":""},
+                     "Vertical Motor":{"Lock":"Unlocked"}
            }
 
 # Global Memory to Map Xbox Controller Inputs to other Threads

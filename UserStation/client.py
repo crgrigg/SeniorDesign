@@ -54,10 +54,10 @@ Videolabel.grid(row=0, column=0,rowspan = 10,columnspan=10)
 ROVStatusRow = 11
 ROVStatusCol = 0
 RowIndex = 2
-ColumnSpace = 4
+ColumnSpace = 2
 SensorRow = ROVStatusRow
 SensorCol = ROVStatusCol + ColumnSpace +100
-SensorColSpace = 4
+SensorColSpace = 2
 
 ROVStatus = Label(win,bg = "orange",font="bold")
 ROVStatus.grid(row=ROVStatusRow,column = ROVStatusCol, columnspan=3)
@@ -82,21 +82,12 @@ VerticleMotorValue.configure(text ="")
 RowIndex += 1
 
 #Left Motor Speed
-LeftMotorSpeed = Label(win,bg="orange")
-LeftMotorSpeed.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
-LeftMotorSpeed.configure(text ="Left Motor Speed")
-LeftMotorValue = Label(win,bg="orange")
-LeftMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
-LeftMotorValue.configure(text ="")
-RowIndex += 1
-
-#Right Motor Speed
-RightMotorSpeed = Label(win,bg="orange")
-RightMotorSpeed.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
-RightMotorSpeed.configure(text ="Right Motor Speed")
-RightMotorValue = Label(win,bg="orange")
-RightMotorValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol  + ColumnSpace)
-RightMotorValue.configure(text ="")
+HorizontalMotorSpeed = Label(win,bg="orange")
+HorizontalMotorSpeed.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
+HorizontalMotorSpeed.configure(text ="Horizontal Motor Speed")
+HorizontalMotorValue = Label(win,bg="orange")
+HorizontalMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
+HorizontalMotorValue.configure(text ="")
 RowIndex += 1
 
 #Vertical Motor Speed
@@ -196,25 +187,49 @@ def show_graphs():
    
     global plot,win
     global Videolabel,DataSetActive,AutoDetect,NoGraph
-    while True:   
-        LeftMotorStr = str("")
-        RightMotorStr = str("")
-        VerticalMotorStr = str("")
-        if AutoMode: AutoModeStr = "Enabled"
+
+    
+    AutoState = 0
+    while True: 
+        
+        if Global.ControllerMap["START"]["Value"] == 0 and AutoState == 0:
+            AutoState = 0
+        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 0:
+            AutoState = 1
+        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 1:
+            AutoState = 1
+        elif Global.ControllerMap["START"]["Value"] == 0 and AutoState == 1:
+            AutoState = 2
+        elif Global.ControllerMap["START"]["Value"] == 0 and AutoState == 2:
+            AutoState = 2
+        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 2:
+            AutoState = 3
+        elif Global.ControllerMap["START"]["Value"] == 0 and AutoState == 3:
+            AutoState = 3
+        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 3:
+            AutoState = 0
+
+
+        if AutoState == 1 or AutoState == 2:
+            AutoMode = True
+        else: AutoMode = False
+
+        Global.ControllerMap["START"]["Value"] == 0 and AutoState == 0
+
+        HorizontalMotorStr = str(Global.ControllerMap["Stick"]["Left"]["ValueY"])
+       
+        if Global.AutoMode: AutoModeStr = "Enabled"
         else: AutoModeStr = "Disabled"
         CPUTempStr = str(Global.MemMap["CPU"]["Temp"])
         ROVErrStr = str(Global.MemMap["Error"]["Message"])
-
         TempStr = str(Global.MemMap["TempSensor"]["TempF"])
-        PressureStr = str(Global.MemMap["DepthSensor"]["Depth"])
+        PressureStr = str(Global.MemMap["DepthSensor"]["Depth"] * 4)
         UltraSonic1Str = str(Global.MemMap["UltraSensor1"]["Distance"])
         UltraSonic2Str = str(Global.MemMap["UltraSensor2"]["Distance"])
         UltraSonic3Str = str(Global.MemMap["UltraSensor3"]["Distance"])
         
                 #ROV Status
-        LeftMotorValue.configure(text=LeftMotorStr)
-        RightMotorValue.configure(text=RightMotorStr)
-        VerticleMotorValue.configure(text=VerticalMotorStr)
+        HorizontalMotorValue.configure(text=HorizontalMotorStr)
         AutoModeValue.configure(text=AutoModeStr)
         CPUTempValue.configure(text=CPUTempStr)
         ROVErrorValue.configure(text=ROVErrStr)
@@ -288,5 +303,4 @@ GraphThread.start()
 
 #computer_visual()
 show_frames()
-#show_graphs()
 win.mainloop()
