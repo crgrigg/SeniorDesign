@@ -17,12 +17,12 @@ import Global
 import DataSetCapture
 
 #Enable to save dataset values
-DataSetActive = False
+DataSetActive = Global.DataSetActive
 DataCaptureTime = time.time()
 DataTimeGap = .25
 
-AutoDetect = False
-cascade_src = 'C:/Users/rober/OneDrive/Desktop/Images/Models/full_lbp_classifier/cascade.xml'
+AutoMode = Global.AutoMode
+cascade_src = 'C:/Users/rober/OneDrive/Desktop/Images/classifier/cascade.xml'
 model_cascade = cv2.CascadeClassifier (cascade_src) #Using the cascade classifier
 
 MotorThread = threading.Thread(target = MotorClient.motor_client)
@@ -36,144 +36,196 @@ host_ip = '169.254.253.85'
 port = 9997
 client_socket.connect((host_ip,port)) # a tuple
 
-ListSize = 50
-TempValue = []
-PressureValue = []
-ULValue = []
-URValue = []
-UBValue = []
 
 # Create an instance of TKinter Window or frame
 win = Tk()
 
 # Set the size of the window
-#win.geometry("1920x1080")
+win.geometry("1080x720")
 win.attributes("-topmost", True)
 win.title("Underwater ROV")
 win.configure(background='orange')
 
 
-VideoLabelRow = 0
-VideoLabelCol = 0
-
-
 # Create a Label to capture the Video frames
 Videolabel =Label(win)
-Videolabel.grid(row=VideoLabelRow, column=VideoLabelCol)
+Videolabel.grid(row=0, column=0,rowspan = 10,columnspan=10)
 
-#Graphs
-figure = plt.figure(figsize=(5.5,6),dpi=100)
-TempPlot = figure.add_subplot(2,1,1)
-TempPlot.set_xlabel("time [s]")
-TempPlot.set_ylabel("Temperature [C]")
-TempPlot.set_title("Temperature", fontweight='bold')
-TempPlot.set_facecolor('orange')
-TempPlot.set_ylim(10,30)
-PressurePlot = figure.add_subplot(2,1,2)
-PressurePlot.set_xlabel("time[s]")
-PressurePlot.set_ylabel("Pressure [kPa]")
-PressurePlot.set_title("Pressure", fontweight='bold')
-PressurePlot.set_facecolor('orange')
-PressurePlot.set_ylim(10,30)
-figure.set_facecolor('orange')
-canvas = FigureCanvasTkAgg(figure,win)
-canvas.get_tk_widget().grid(row=0,column=100)
+ROVStatusRow = 11
+ROVStatusCol = 0
+RowIndex = 2
+ColumnSpace = 4
+SensorRow = ROVStatusRow
+SensorCol = ROVStatusCol + ColumnSpace +100
+SensorColSpace = 4
 
-figure1 = plt.figure(figsize=(12,4),dpi=100)
-USLeft = figure1.add_subplot(1,3,1)
-USLeft.set_xlabel("time [s]")
-USLeft.set_ylabel("Distance [mm]")
-USLeft.set_title("Left Ultrasonic", fontweight='bold')
-USLeft.set_facecolor('orange')
-USRight = figure1.add_subplot(1,3,2)
-USRight.set_xlabel("time [s]")
-USRight.set_ylabel("Distance [mm]")
-USRight.set_title("Right Ultrasonic", fontweight='bold')
-USRight.set_facecolor('orange')
-USBottom = figure1.add_subplot(1,3,3)
-USBottom.set_xlabel("time [s]")
-USBottom.set_ylabel("Distance [mm]")
-USBottom.set_title("Bottom Ultrasonic", fontweight='bold')
-USBottom.set_facecolor('orange')
-figure1.set_facecolor('orange')
-canvas1 = FigureCanvasTkAgg(figure1,win)
-canvas1.get_tk_widget().grid(row=300,column=0)
+ROVStatus = Label(win,bg = "orange",font="bold")
+ROVStatus.grid(row=ROVStatusRow,column = ROVStatusCol, columnspan=3)
+ROVStatus.configure(text="UUV Status")
 
-plt.subplots_adjust(left=0.1,bottom=0.1,right=0.9,top=0.9,wspace=0.4,hspace=0.4)
+#Light Status
+LightStatus = Label(win,bg="orange")
+LightStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
+LightStatus.configure(text ="Light Status")
+LightStatusValue = Label(win,bg="orange")
+LightStatusValue.grid(row=ROVStatusRow  + RowIndex,column=ROVStatusCol + ColumnSpace)
+LightStatusValue.configure(text="")
+RowIndex += 1
+
+#Verticle Motor Status
+VerticleMotorLock = Label(win,bg="orange")
+VerticleMotorLock.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
+VerticleMotorLock.configure(text ="Vertical Motor Lock")
+VerticleMotorValue = Label(win,bg="orange")
+VerticleMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
+VerticleMotorValue.configure(text ="")
+RowIndex += 1
+
+#Left Motor Speed
+LeftMotorSpeed = Label(win,bg="orange")
+LeftMotorSpeed.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
+LeftMotorSpeed.configure(text ="Left Motor Speed")
+LeftMotorValue = Label(win,bg="orange")
+LeftMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
+LeftMotorValue.configure(text ="")
+RowIndex += 1
+
+#Right Motor Speed
+RightMotorSpeed = Label(win,bg="orange")
+RightMotorSpeed.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
+RightMotorSpeed.configure(text ="Right Motor Speed")
+RightMotorValue = Label(win,bg="orange")
+RightMotorValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol  + ColumnSpace)
+RightMotorValue.configure(text ="")
+RowIndex += 1
+
+#Vertical Motor Speed
+VerticleMotorLock = Label(win,bg="orange")
+VerticleMotorLock.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
+VerticleMotorLock.configure(text ="Vertical Motor Speed")
+VerticleMotorValue = Label(win,bg="orange")
+VerticleMotorValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol  + ColumnSpace)
+VerticleMotorValue.configure(text ="")
+RowIndex += 1
+
+#Auto Mode
+AutoModeStatus = Label(win,bg="orange")
+AutoModeStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
+AutoModeStatus.configure(text ="Auto Mode")
+AutoModeValue = Label(win,bg="orange")
+AutoModeValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol + ColumnSpace)
+AutoModeValue.configure(text ="")
+RowIndex += 1
+
+#CPU Temperature
+CPUTempStatus = Label(win,bg="orange")
+CPUTempStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
+CPUTempStatus.configure(text ="CPU Temp")
+CPUTempValue = Label(win,bg="orange")
+CPUTempValue.grid(row = ROVStatusRow + RowIndex , column = ROVStatusCol + ColumnSpace)
+CPUTempValue.configure(text ="")
+RowIndex += 1
+
+#ROV Error Status
+ROVErrorStatus = Label(win,bg="orange")
+ROVErrorStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
+ROVErrorStatus.configure(text ="UUV Error Status")
+ROVErrorValue = Label(win,bg="orange")
+ROVErrorValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol + ColumnSpace )
+ROVErrorValue.configure(text ="")
+RowIndex += 1
+
+#Sensor Data
+RowIndex = 2
+SensorData = Label(win,bg = "orange",font="bold")
+SensorData.grid(row=SensorRow,column = SensorCol, columnspan=2)
+SensorData.configure(text="SensorData")
+
+# Temp Sensor
+TempSensorStatus = Label(win,bg="orange")
+TempSensorStatus.grid(row = SensorRow + RowIndex, column = SensorCol)
+TempSensorStatus.configure(text ="Temperature [Ferenheit]")
+TempSensorValue = Label(win,bg="orange")
+TempSensorValue.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
+TempSensorValue.configure(text ="")
+RowIndex += 1
+
+#Pressure
+PressureSensorStatus = Label(win,bg="orange")
+PressureSensorStatus.grid(row = SensorRow + RowIndex, column = SensorCol)
+PressureSensorStatus.configure(text ="Pressure [Pa]")
+PressureSensorValue = Label(win,bg="orange")
+PressureSensorValue.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
+PressureSensorValue.configure(text ="")
+RowIndex += 1
+
+#Ultrasonic Sensor 1
+UltrasonicSensor1Status = Label(win,bg="orange")
+UltrasonicSensor1Status.grid(row = SensorRow + RowIndex, column = SensorCol)
+UltrasonicSensor1Status.configure(text ="Left Distance[mm]")
+UltrasonicSensor1Value = Label(win,bg="orange")
+UltrasonicSensor1Value.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
+UltrasonicSensor1Value.configure(text ="")
+RowIndex += 1
+
+#Ultrasonic Sensor 2
+UltrasonicSensor2Status = Label(win,bg="orange")
+UltrasonicSensor2Status.grid(row = SensorRow + RowIndex, column = SensorCol)
+UltrasonicSensor2Status.configure(text ="Right Distance [mm]")
+UltrasonicSensor2Value = Label(win,bg="orange")
+UltrasonicSensor2Value.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
+UltrasonicSensor2Value.configure(text ="")
+RowIndex += 1
+
+#Ultrasonic Sensor 3
+UltrasonicSensor3Status = Label(win,bg="orange")
+UltrasonicSensor3Status.grid(row = SensorRow + RowIndex, column = SensorCol)
+UltrasonicSensor3Status.configure(text ="Bottom Distance [mm]")
+UltrasonicSensor3Value = Label(win,bg="orange")
+UltrasonicSensor3Value.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
+UltrasonicSensor3Value.configure(text ="")
+RowIndex += 1
+
 
 data = b""
 payload_size = struct.calcsize("Q")
 
 Database = MasterDB.MasterDB()
 
-
-NoGraph = False
-
-
 def show_graphs():
    
-    global plot,canvas,canvas1,figure,figure1,win
-    global TempValue,PressureValue,ULValue,URValue,UBValue,ListSize,TempLine
+    global plot,win
     global Videolabel,DataSetActive,AutoDetect,NoGraph
-    
-    if DataSetActive == False and NoGraph == False:
-        while True:
-           # print(Global.MemMap["UltraSensor1"]["Distance"])
-            print(Global.MemMap["UltraSensor2"]["Distance"])
-            #print( Global.MemMap["UltraSensor3"]["Distance"])
-            TempValue.append(Global.MemMap["TempSensor"]["TempC"])
-            PressureValue.append(Global.MemMap["DepthSensor"]["Depth"])
-            ULValue.append(Global.MemMap["UltraSensor1"]["Distance"])
-            URValue.append(Global.MemMap["UltraSensor2"]["Distance"])
-            UBValue.append(Global.MemMap["UltraSensor3"]["Distance"])
+    while True:   
+        LeftMotorStr = str("")
+        RightMotorStr = str("")
+        VerticalMotorStr = str("")
+        if AutoMode: AutoModeStr = "Enabled"
+        else: AutoModeStr = "Disabled"
+        CPUTempStr = str(Global.MemMap["CPU"]["Temp"])
+        ROVErrStr = str(Global.MemMap["Error"]["Message"])
 
-            if len(TempValue) > ListSize:
-                TempValue.pop(0)
-                PressureValue.pop(0)
-                ULValue.pop(0)
-                URValue.pop(0)
-                UBValue.pop(0)
-    
-                TempPlot.clear()
-                TempPlot.set_xlabel("time [s]")
-                TempPlot.set_ylabel("Temperature [C]")
-                TempPlot.set_title("Temperature", fontweight='bold')
-                TempPlot.set_facecolor('orange')
+        TempStr = str(Global.MemMap["TempSensor"]["TempF"])
+        PressureStr = str(Global.MemMap["DepthSensor"]["Depth"])
+        UltraSonic1Str = str(Global.MemMap["UltraSensor1"]["Distance"])
+        UltraSonic2Str = str(Global.MemMap["UltraSensor2"]["Distance"])
+        UltraSonic3Str = str(Global.MemMap["UltraSensor3"]["Distance"])
         
-                #PressurePlot.clear()
-                #PressurePlot.set_xlabel("time[s]")
-                #PressurePlot.set_ylabel("Pressure [kPa]")
-                #PressurePlot.set_title("Pressure", fontweight='bold')
-                #PressurePlot.set_facecolor('orange')
+                #ROV Status
+        LeftMotorValue.configure(text=LeftMotorStr)
+        RightMotorValue.configure(text=RightMotorStr)
+        VerticleMotorValue.configure(text=VerticalMotorStr)
+        AutoModeValue.configure(text=AutoModeStr)
+        CPUTempValue.configure(text=CPUTempStr)
+        ROVErrorValue.configure(text=ROVErrStr)
 
-                #USLeft.clear()
-                #USRight.set_xlabel("time [s]")
-                #USRight.set_ylabel("Distance [mm]")
-                #USRight.set_title("Right Ultrasonic", fontweight='bold')
-                #USRight.set_facecolor('orange')
-
-                #USRight.clear()
-                #USRight.set_xlabel("time [s]")
-                #USRight.set_ylabel("Distance [mm]")
-                #USRight.set_title("Right Ultrasonic", fontweight='bold')
-                #USRight.set_facecolor('orange')
-
-                #USBottom.clear()
-                #USRight.set_xlabel("time [s]")
-                #USRight.set_ylabel("Distance [mm]")
-                #USRight.set_title("Right Ultrasonic", fontweight='bold')
-                #USRight.set_facecolor('orange')
-
-            TempPlot.plot(TempValue,color="black",marker="x",linestyle="-")
-            #PressurePlot.plot(PressureValue,color="black",marker="",linestyle="-")
-            #USLeft.plot(ULValue,color="black",marker="",linestyle="-")
-            #USRight.plot(URValue,color="black",marker="",linestyle="-")
-            #USBottom.plot(UBValue,color="black",marker="",linestyle="-")
-
-            canvas.draw()
-            #canvas1.draw()
-            sleep(1)
-   
+        #SensorData
+        TempSensorValue.configure(text=TempStr)
+        PressureSensorValue.configure(text=PressureStr)
+        UltrasonicSensor1Value.configure(text=UltraSonic1Str)
+        UltrasonicSensor2Value.configure(text=UltraSonic2Str)
+        UltrasonicSensor3Value.configure(text=UltraSonic3Str)
+        sleep(.1)
 
 
 def show_frames():
@@ -197,16 +249,25 @@ def show_frames():
     data  = data[msg_size:]
     frame = pickle.loads(frame_data)
 
-    #cv2.imshow("RECEIVING VIDEO",frame)s
+ 
 
     # Get the latest frame and convert into Image
-   
-    #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    #model = model_cascade.detectMultiScale(gray, 1.1, 1)
 
-    #for (x, y, w, h) in model:
-    #    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-    
+    #If AutoDetecting/ in AutoMode
+    if AutoMode:
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        model = model_cascade.detectMultiScale(gray, 1.1, 1)
+        AvgCenterMassX = 0
+        AvgCenterMassY = 0
+        NumCoord = 0
+        for (x, y, w, h) in model:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            AvgCenterMassX += (x+w)/2
+            AvgCenterMassY += (y+h)/2
+            NumCoord += 1
+        AvgCenterMassX = AvgCenterMassX/NumCoord
+        AvgCenterMassY = AvgCenterMassY/NumCoord
+
     cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
     img = Image.fromarray(cv2image)
     # Convert image to PhotoImage
@@ -227,5 +288,5 @@ GraphThread.start()
 
 #computer_visual()
 show_frames()
-
+#show_graphs()
 win.mainloop()

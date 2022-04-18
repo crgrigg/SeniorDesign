@@ -1,6 +1,6 @@
 # This code is for the server 
 # Lets import the libraries
-import cv2, socket, pickle, struct, imutils
+import cv2, socket, pickle, struct
 
 # Socket Create
 server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)

@@ -19,38 +19,23 @@ def get_signals():
                 elif event.type == X.EVENT_BUTTON_PRESSED:
                     if event.button == 'A':
                         d["Buttons"]["A"] = 1
-                        print(d["Buttons"]["A"])
-                        #print(event.button)
                     elif event.button == 'B':
-                        d["Buttons"]["B"] = event.button
-                        print(d["Buttons"]["B"])
-                        #print(event.button)
+                        d["Buttons"]["B"] = 1
                     elif event.button == 'X':
-                        d["Buttons"]["X"] = event.button
-                        print(d["Buttons"]["X"])
-                        #print(event.button)
+                        d["Buttons"]["X"] = 1
+                        Global.DataSetActive = True
                     elif event.button == 'Y':
-                        d["Buttons"]["Y"] = event.button
-                        print(d["Buttons"]["Y"])
-                        #print(event.button)
+                        d["Buttons"]["Y"] = 1
                     elif event.button == 'DPAD_UP':
-                        d["D_Pad"]["Up"] = event.button
-                        print(d["D_Pad"]["Up"])
-                        #print(event.button)
+                        d["D_Pad"]["Up"] = 1
                     elif event.button == 'DPAD_DOWN':
-                        d["D_Pad"]["Down"] = event.button
-                        print(d["D_Pad"]["Down"])
-                        #print(event.button)
+                        d["D_Pad"]["Down"] = 1
                     elif event.button == 'DPAD_LEFT':
-                        d["D_Pad"]["Left"] = event.button
-                        print(d["D_Pad"]["Left"])
-                        #print(event.button)
+                        d["D_Pad"]["Left"] = 1
                     elif event.button == 'DPAD_RIGHT':
-                        d["D_Pad"]["Right"] = event.button
-                        print(d["D_Pad"]["Right"])
-                        #print(event.button)
+                        d["D_Pad"]["Right"] = 1
                     elif event.button == 'START':
-                        print(event.button)
+                        d["START"]["Value"] = 1
                     elif event.button == 'BACK':
                         print(event.button)
                     elif event.button == 'LEFT_THUMB':
@@ -58,49 +43,31 @@ def get_signals():
                     elif event.button == 'RIGHT_THUMB':
                         print(event.button)
                     elif event.button == 'LEFT_SHOULDER':
-                        d["Bumper"]["Left"] = event.button
-                        print(d["Bumper"]["Left"])
-                        #print(event.button)
+                        d["Bumper"]["Left"] = 1
                     elif event.button == 'RIGHT_SHOULDER':
                         d["Bumper"]["Right"] = 1
                         print(d["Bumper"]["Right"])
-                        #print(event.button)
-
+             
                 elif event.type == X.EVENT_BUTTON_RELEASED:
                     if event.button == 'A':
                         d["Buttons"]["A"] = 0
-                        print(d["Buttons"]["A"])
-                        #print(event.button)
                     elif event.button == 'B':
-                        d["Buttons"]["B"] = event.button
-                        print(d["Buttons"]["B"])
-                        #print(event.button)
+                        d["Buttons"]["B"] = 0
                     elif event.button == 'X':
-                        d["Buttons"]["X"] = event.button
-                        print(d["Buttons"]["X"])
-                        #print(event.button)
+                        d["Buttons"]["X"] = 0
+                        Global.DataSetActive = False
                     elif event.button == 'Y':
-                        d["Buttons"]["Y"] = event.button
-                        print(d["Buttons"]["Y"])
-                        #print(event.button)
+                        d["Buttons"]["Y"] = 0
                     elif event.button == 'DPAD_UP':
-                        d["D_Pad"]["Up"] = event.button
-                        print(d["D_Pad"]["Up"])
-                        #print(event.button)
+                        d["D_Pad"]["Up"] = 0
                     elif event.button == 'DPAD_DOWN':
-                        d["D_Pad"]["Down"] = event.button
-                        print(d["D_Pad"]["Down"])
-                        #print(event.button)
+                        d["D_Pad"]["Down"] = 0
                     elif event.button == 'DPAD_LEFT':
-                        d["D_Pad"]["Left"] = event.button
-                        print(d["D_Pad"]["Left"])
-                        #print(event.button)
+                        d["D_Pad"]["Left"] = 0
                     elif event.button == 'DPAD_RIGHT':
-                        d["D_Pad"]["Right"] = event.button
-                        print(d["D_Pad"]["Right"])
-                        #print(event.button)
+                        d["D_Pad"]["Right"] = 0
                     elif event.button == 'START':
-                        print(event.button)
+                        d["START"]["Value"] = 0
                     elif event.button == 'BACK':
                         print(event.button)
                     elif event.button == 'LEFT_THUMB':
@@ -110,11 +77,10 @@ def get_signals():
                     elif event.button == 'LEFT_SHOULDER':
                         d["Bumper"]["Left"] = event.button
                         print(d["Bumper"]["Left"])
-                        #print(event.button)
                     elif event.button == 'RIGHT_SHOULDER':
                         d["Bumper"]["Right"] = 0
                         print(d["Bumper"]["Right"])
-                        #print(event.button)
+                     
 
                 elif event.type == X.EVENT_TRIGGER_MOVED:
                     if event.trigger == X.LEFT:
