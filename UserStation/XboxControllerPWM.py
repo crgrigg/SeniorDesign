@@ -83,16 +83,16 @@ def get_signals():
                      
 
                 elif event.type == X.EVENT_TRIGGER_MOVED:
-                    if event.trigger == X.LEFT:
+                    if event.trigger == X.LEFT and Global.AutoMode == False:
                         Global.ControllerMap["Trigger"]["Left"] = event.value
                         print(event.trigger)
                         print(event.value)
-                    elif event.trigger == X.RIGHT:
+                    elif event.trigger == X.RIGHT and Global.AutoMode == False:
                         Global.ControllerMap["Trigger"]["Right"] = event.value
                         print(event.trigger)
                         print(event.value)
                 elif event.type == X.EVENT_STICK_MOVED:
-                    if event.stick == X.LEFT:
+                    if event.stick == X.LEFT and Global.AutoMode == False:
                         d["Stick"]["Left"]["ValueX"] = event.x
                         d["Stick"]["Left"]["ValueY"] = event.y
                         print(event.x)
@@ -100,8 +100,15 @@ def get_signals():
                         print(event.value)
                         print(event.dir)
                     elif event.stick == X.RIGHT:
+                        if Global.AutoMode == False:
+                            constant = Global.ControllerMap["Stick"]["Right"]["ValueY"]
+
+                        if Global.AutoMode == True:
+                            Global.ControllerMap["Stick"]["Right"]["ValueY"] = constant
+                        else:
+                            Global.ControllerMap["Stick"]["Right"]["ValueY"] = event.y
+
                         Global.ControllerMap["Stick"]["Right"]["ValueX"] = event.x
-                        Global.ControllerMap["Stick"]["Right"]["ValueY"] = event.y
                         print(Global.ControllerMap["Stick"]["Right"]["ValueX"])
                         print(Global.ControllerMap["Stick"]["Right"]["ValueY"])
                         print(event.value)
