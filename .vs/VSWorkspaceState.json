@@ -1,10 +1,12 @@
 {
   "ExpandedNodes": [
     "",
+    "\\ROV",
     "\\Support",
     "\\TestFiles",
+    "\\TestFiles\\resources",
     "\\UserStation"
   ],
-  "SelectedNode": "\\UserStation\\client.py",
+  "SelectedNode": "\\UserStation",
   "PreviewInSolutionExplorer": false
 }

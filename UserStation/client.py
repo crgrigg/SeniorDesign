@@ -27,6 +27,9 @@ VertState = 0
 cascade_src = 'C:/Users/jfranko13/OneDrive/Desktop/Images/classifier/cascade.xml'
 model_cascade = cv2.CascadeClassifier (cascade_src) #Using the cascade classifier
 
+Paw = Image.open("ClemsonPaw.jpg")
+PawhPhoto = ImageTk.PhotoImage(Paw)
+  
 MotorThread = threading.Thread(target = MotorClient.motor_client)
 MotorThread.start()
 
@@ -52,6 +55,17 @@ win.configure(background='orange')
 # Create a Label to capture the Video frames
 Videolabel =Label(win)
 Videolabel.grid(row=0, column=0,rowspan = 10,columnspan=10)
+
+Pawlabel = Label(win)
+Pawlabel.grid(row=0,column=1,rowspan=10,columnspan=10)
+Pawlabel.imgtk = PawPhoto
+Pawlabel.configure(image=imgtk)
+   
+
+
+
+
+
 
 ROVStatusRow = 11
 ROVStatusCol = 0
