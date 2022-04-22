@@ -23,6 +23,7 @@ DataTimeGap = .25
 
 AutoMode = Global.AutoMode
 AutoState = 0
+VertState = 0
 cascade_src = 'C:/Users/jfranko13/OneDrive/Desktop/Images/classifier/cascade.xml'
 model_cascade = cv2.CascadeClassifier (cascade_src) #Using the cascade classifier
 
@@ -60,7 +61,7 @@ SensorRow = ROVStatusRow
 SensorCol = ROVStatusCol + ColumnSpace +100
 SensorColSpace = 2
 
-ROVStatus = Label(win,bg = "orange",font="bold")
+ROVStatus = Label(win,bg = "orange", font="bold")
 ROVStatus.grid(row=ROVStatusRow,column = ROVStatusCol, columnspan=3)
 ROVStatus.configure(text="UUV Status")
 
@@ -188,7 +189,7 @@ def show_graphs():
    
     global plot,win
     global Videolabel,DataSetActive,AutoDetect,NoGraph
-    global AutoState
+    global AutoState, VertState
     
    
     while True: 
@@ -251,8 +252,8 @@ def show_graphs():
 
 
         #UI Section Text
-        HorizontalMotorStr = str(Global.ControllerMap["Stick"]["Left"]["ValueY"] * 100) + "%"
-        VericalMotorStr = str(Global.ControllerMap["Stick"]["Right"]["ValueY"] * 100) + "%"
+        HorizontalMotorStr = str(Global.ControllerMap["Stick"]["Left"]["ValueY"] * 100)
+        VericalMotorStr = str(Global.ControllerMap["Stick"]["Right"]["ValueY"] * 100)
         VerticalMotorLockStr = Global.MemMap["Vertical Motor"]["Lock"]
        
         if Global.AutoMode: AutoModeStr = "Enabled"
