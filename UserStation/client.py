@@ -23,7 +23,7 @@ DataTimeGap = .25
 
 AutoMode = Global.AutoMode
 AutoState = 0
-VertState = 0
+LightState = 0
 cascade_src = 'C:/Users/jfranko13/OneDrive/Desktop/Images/classifier/cascade.xml'
 model_cascade = cv2.CascadeClassifier (cascade_src) #Using the cascade classifier
 
@@ -189,11 +189,34 @@ def show_graphs():
    
     global plot,win
     global Videolabel,DataSetActive,AutoDetect,NoGraph
-    global AutoState, VertState
+    global AutoState, LightState
     
    
-    while True: 
-        
+    while True:
+
+        #Lights State Machine
+        if Global.ControllerMap["Buttons"]["A"] == 0 and LightState == 0:
+            LightState = 0
+        elif Global.ControllerMap["Buttons"]["A"] == 1 and LightState == 0:
+            LightState = 1
+        elif Global.ControllerMap["Buttons"]["A"] == 1 and LightState == 1:
+            LightState = 1
+        elif Global.ControllerMap["Buttons"]["A"] == 0 and LightState == 1:
+            LightState = 2
+        elif Global.ControllerMap["Buttons"]["A"] == 0 and LightState == 2:
+            LightState = 2
+        elif Global.ControllerMap["Buttons"]["A"] == 1 and LightState == 2:
+            LightState = 3
+        elif Global.ControllerMap["Buttons"]["A"] == 0 and LightState == 3:
+            LightState = 3
+        elif Global.ControllerMap["Buttons"]["A"] == 1 and LightState == 3:
+            LightState = 0
+
+        if LightState == 1 or LightState == 2:
+            LightStatusStr = "Enabled"
+        else: LightStatusStr = "Disabled"
+
+
         #Auto Mode State Machine
         if Global.ControllerMap["START"]["Value"] == 0 and AutoState == 0:
             AutoState = 0
@@ -229,31 +252,36 @@ def show_graphs():
         #    Global.MemMap["Vertical Lock"]["Lock"] = "Unlocked"
 
         #Vertical Lock State Machine
-        if Global.ControllerMap["Bumper"]["Right"] == 0 and VertState == 0:
-            VertState = 0
-        elif Global.ControllerMap["Bumper"]["Right"] == 1 and VertState == 0:
-            VertState = 1
-        elif Global.ControllerMap["Bumper"]["Right"] == 1 and VertState == 1:
-            VertState = 1
-        elif Global.ControllerMap["Bumper"]["Right"] == 0 and VertState == 1:
-            VertState = 2
-        elif Global.ControllerMap["Bumper"]["Right"] == 0 and VertState == 2:
-            VertState = 2
-        elif Global.ControllerMap["Bumper"]["Right"] == 1 and VertState == 2:
-            VertState = 3
-        elif Global.ControllerMap["Bumper"]["Right"] == 0 and VertState == 3:
-            VertState = 3
-        elif Global.ControllerMap["Bumper"]["Right"] == 1 and VertState == 3:
-            VertState = 0
+        if Global.ControllerMap["Bumper"]["Right"] == 0 and Global.VertState == 0:
+            Global.VertState = 0
+        elif Global.ControllerMap["Bumper"]["Right"] == 1 and Global.VertState == 0:
+            Global.VertState = 1
+        elif Global.ControllerMap["Bumper"]["Right"] == 1 and Global.VertState == 1:
+            Global.VertState = 1
+        elif Global.ControllerMap["Bumper"]["Right"] == 0 and Global.VertState == 1:
+            Global.VertState = 2
+        elif Global.ControllerMap["Bumper"]["Right"] == 0 and Global.VertState == 2:
+            Global.VertState = 2
+        elif Global.ControllerMap["Bumper"]["Right"] == 1 and Global.VertState == 2:
+            Global.VertState = 3
+        elif Global.ControllerMap["Bumper"]["Right"] == 0 and Global.VertState == 3:
+            Global.VertState = 3
+        elif Global.ControllerMap["Bumper"]["Right"] == 1 and Global.VertState == 3:
+            Global.VertState = 0
 
-        if VertState == 1 or VertState == 2:
-            Global.MemMap["Vertical Lock"]["Lock"] = "Locked"
-        else: Global.MemMap["Vertical Lock"]["Lock"] = "Unlocked"
-
+        if Global.VertState == 1 or Global.VertState == 2:
+            Global.MemMap["Vertical Motor"]["Lock"] = "Locked"
+        else: 
+            Global.MemMap["Vertical Motor"]["Lock"] = "Unlocked"
+            saved = Global.ControllerMap["Stick"]["Right"]["ValueY"]
 
         #UI Section Text
-        HorizontalMotorStr = str(Global.ControllerMap["Stick"]["Left"]["ValueY"] * 100)
-        VericalMotorStr = str(Global.ControllerMap["Stick"]["Right"]["ValueY"] * 100)
+        #LightStatusStr = str(Global.MemMap["Lights"]["Status"])
+        HorizontalMotorStr = str(round(Global.ControllerMap["Stick"]["Left"]["ValueY"] * 100)) + '%'
+        if Global.VertState == 1 or Global.VertState == 2:
+            VerticalMotorStr = str(round(saved * 100)) + '%'
+        else:
+            VerticalMotorStr = str(round(Global.ControllerMap["Stick"]["Right"]["ValueY"] * 100)) + '%'
         VerticalMotorLockStr = Global.MemMap["Vertical Motor"]["Lock"]
        
         if Global.AutoMode: AutoModeStr = "Enabled"
@@ -267,8 +295,9 @@ def show_graphs():
         UltraSonic3Str = str(Global.MemMap["UltraSensor3"]["Distance"])
         
         #ROV Status
+        LightStatusValue.configure(text=LightStatusStr)
         HorizontalMotorValue.configure(text=HorizontalMotorStr)
-        VerticalMotorValue.configure(text=VerticalMotorStr)
+        VerticleMotorValue.configure(text=VerticalMotorStr)
         VerticleMotorLockValue.configure(text=VerticalMotorLockStr)
         AutoModeValue.configure(text=AutoModeStr)
         CPUTempValue.configure(text=CPUTempStr)
@@ -336,7 +365,7 @@ def show_frames():
             Global.AutoMode = False
             AutoState = 0
         # vertical-ish pipe
-        Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.2
+        Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.15
         TurnSpeedR = 0 + (1 - 0) * ((AvgCenterMassX - 240) / (480 - 240))
         TurnSpeedL = 0 + (1 - 0) * ((AvgCenterMassX - 0) / (240 - 0))
         if AvgCenterMassX >= 240:

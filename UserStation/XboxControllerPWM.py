@@ -100,13 +100,22 @@ def get_signals():
                         print(event.value)
                         print(event.dir)
                     elif event.stick == X.RIGHT:
+                        #constant = Global.ControllerMap["Stick"]["Right"]["ValueY"]
                         if Global.AutoMode == False:
                             constant = Global.ControllerMap["Stick"]["Right"]["ValueY"]
-
+                            Global.ControllerMap["Stick"]["Right"]["ValueY"] = event.y
                         if Global.AutoMode == True:
                             Global.ControllerMap["Stick"]["Right"]["ValueY"] = constant
-                        else:
-                            Global.ControllerMap["Stick"]["Right"]["ValueY"] = event.y
+
+                        #vert = 0
+                        #if Global.MemMap["Vertical Motor"]["Lock"] == "Unlocked":
+                        #    vert = Global.ControllerMap["Stick"]["Right"]["ValueY"]
+
+                        #if Global.MemMap["Vertical Motor"]["Lock"] == "Locked":
+                        #    Global.ControllerMap["Stick"]["Right"]["ValueY"] = vert
+                        #else:
+                        #    Global.ControllerMap["Stick"]["Right"]["ValueY"] = event.y
+
 
                         Global.ControllerMap["Stick"]["Right"]["ValueX"] = event.x
                         print(Global.ControllerMap["Stick"]["Right"]["ValueX"])

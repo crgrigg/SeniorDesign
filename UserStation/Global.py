@@ -3,6 +3,7 @@
 #Describes Current Data of the system for the purpose of communication with the
 # Global Data Shared by threads
 AutoMode = False
+VertState = 0
 DataSetActive = False
 
 MemMap = {
@@ -14,7 +15,8 @@ MemMap = {
                      "UltraSensor3":{"ObjectID": 4,"SensorID": 1,"Distance": 0.0},
                      "CPU":{"ObjectID:":5,"Temp":0.0},
                      "Error":{"Message":""},
-                     "Vertical Motor":{"Lock":"Unlocked"}
+                     "Vertical Motor":{"Lock":"Unlocked"},
+                     "Lights":{"Status":"Disabled"}
            }
 
 # Global Memory to Map Xbox Controller Inputs to other Threads
