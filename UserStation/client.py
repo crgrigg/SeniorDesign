@@ -21,14 +21,14 @@ DataSetActive = Global.DataSetActive
 DataCaptureTime = time.time()
 DataTimeGap = .25
 
-AutoMode = Global.AutoMode
+
 AutoState = 0
 LightState = 0
-cascade_src = 'C:/Users/jfranko13/OneDrive/Desktop/Images/classifier/cascade.xml'
-model_cascade = cv2.CascadeClassifier (cascade_src) #Using the cascade classifier
+#cascade_src = 'C:/Users/rober/OneDrive/Desktop/Images/classifier/cascade.xml'
+#model_cascade = cv2.CascadeClassifier (cascade_src) #Using the cascade classifier
 
-Paw = Image.open("ClemsonPaw.jpg")
-PawhPhoto = ImageTk.PhotoImage(Paw)
+Paw = Image.open("C:/Users/rober/OneDrive/Desktop/BigOlFatPaw.jpg")
+
   
 MotorThread = threading.Thread(target = MotorClient.motor_client)
 MotorThread.start()
@@ -48,7 +48,7 @@ win = Tk()
 # Set the size of the window
 win.geometry("1080x720")
 win.attributes("-topmost", True)
-win.title("Underwater ROV")
+win.title("Underwater Unmanned Vehicle (UUV)")
 win.configure(background='orange')
 
 
@@ -56,10 +56,12 @@ win.configure(background='orange')
 Videolabel =Label(win)
 Videolabel.grid(row=0, column=0,rowspan = 10,columnspan=10)
 
+Paw = Paw.resize((200,200),Image.ANTIALIAS)
+PawPhoto = ImageTk.PhotoImage(Paw)
 Pawlabel = Label(win)
-Pawlabel.grid(row=0,column=1,rowspan=10,columnspan=10)
+Pawlabel.grid(row=0,column=13,rowspan=5,columnspan=4)
 Pawlabel.imgtk = PawPhoto
-Pawlabel.configure(image=imgtk)
+Pawlabel.configure(image=PawPhoto)
    
 
 
@@ -72,123 +74,128 @@ ROVStatusCol = 0
 RowIndex = 2
 ColumnSpace = 2
 SensorRow = ROVStatusRow
-SensorCol = ROVStatusCol + ColumnSpace +100
-SensorColSpace = 2
+SensorCol = ROVStatusCol + ColumnSpace +10
+SensorColSpace = 3
 
-ROVStatus = Label(win,bg = "orange", font="bold")
+TitleFont = ("",18,"bold")
+EntryFont = ("",11)
+ValueFont =  ("",11)
+
+
+ROVStatus = Label(win,bg = "orange", font=TitleFont)
 ROVStatus.grid(row=ROVStatusRow,column = ROVStatusCol, columnspan=3)
 ROVStatus.configure(text="UUV Status")
 
 #Light Status
-LightStatus = Label(win,bg="orange")
+LightStatus = Label(win,bg="orange",font=EntryFont)
 LightStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
 LightStatus.configure(text ="Light Status")
-LightStatusValue = Label(win,bg="orange")
+LightStatusValue = Label(win,bg="orange", font =ValueFont)
 LightStatusValue.grid(row=ROVStatusRow  + RowIndex,column=ROVStatusCol + ColumnSpace)
 LightStatusValue.configure(text="")
 RowIndex += 1
 
 #Horizontal Motor Speed
-HorizontalMotorSpeed = Label(win,bg="orange")
+HorizontalMotorSpeed = Label(win,bg="orange",font=EntryFont)
 HorizontalMotorSpeed.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
 HorizontalMotorSpeed.configure(text ="Horizontal Motor Speed")
-HorizontalMotorValue = Label(win,bg="orange")
+HorizontalMotorValue = Label(win,bg="orange",font=ValueFont)
 HorizontalMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
 HorizontalMotorValue.configure(text ="")
 RowIndex += 1
 
 #Verticle Motor Speed
-VerticleMotorSpeed = Label(win,bg="orange")
+VerticleMotorSpeed = Label(win,bg="orange",font=EntryFont)
 VerticleMotorSpeed.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol)
 VerticleMotorSpeed.configure(text ="Vertical Motor Speed")
-VerticleMotorValue = Label(win,bg="orange")
+VerticleMotorValue = Label(win,bg="orange",font=ValueFont)
 VerticleMotorValue.grid(row = ROVStatusRow  + RowIndex, column = ROVStatusCol  + ColumnSpace)
 VerticleMotorValue.configure(text ="")
 RowIndex += 1
 
 #Vertical Motor Status
-VerticleMotorLock = Label(win,bg="orange")
+VerticleMotorLock = Label(win,bg="orange",font=EntryFont)
 VerticleMotorLock.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
 VerticleMotorLock.configure(text ="Vertical Motor Status")
-VerticleMotorLockValue = Label(win,bg="orange")
+VerticleMotorLockValue = Label(win,bg="orange",font=ValueFont)
 VerticleMotorLockValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol  + ColumnSpace)
 VerticleMotorLockValue.configure(text ="")
 RowIndex += 1
 
 #Auto Mode
-AutoModeStatus = Label(win,bg="orange")
+AutoModeStatus = Label(win,bg="orange",font=EntryFont)
 AutoModeStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
 AutoModeStatus.configure(text ="Auto Mode")
-AutoModeValue = Label(win,bg="orange")
+AutoModeValue = Label(win,bg="orange",font=ValueFont)
 AutoModeValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol + ColumnSpace)
 AutoModeValue.configure(text ="")
 RowIndex += 1
 
 #CPU Temperature
-CPUTempStatus = Label(win,bg="orange")
+CPUTempStatus = Label(win,bg="orange",font=EntryFont)
 CPUTempStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
 CPUTempStatus.configure(text ="CPU Temp [C]")
-CPUTempValue = Label(win,bg="orange")
+CPUTempValue = Label(win,bg="orange",font=ValueFont)
 CPUTempValue.grid(row = ROVStatusRow + RowIndex , column = ROVStatusCol + ColumnSpace)
 CPUTempValue.configure(text ="")
 RowIndex += 1
 
-#ROV Error Status
-ROVErrorStatus = Label(win,bg="orange")
-ROVErrorStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
-ROVErrorStatus.configure(text ="UUV Error Status")
-ROVErrorValue = Label(win,bg="orange")
-ROVErrorValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol + ColumnSpace )
-ROVErrorValue.configure(text ="")
-RowIndex += 1
+##ROV Error Status
+#ROVErrorStatus = Label(win,bg="orange",font=EntryFont)
+#ROVErrorStatus.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol)
+#ROVErrorStatus.configure(text ="UUV Error Status")
+#ROVErrorValue = Label(win,bg="orange",font=ValueFont)
+#ROVErrorValue.grid(row = ROVStatusRow + RowIndex, column = ROVStatusCol + ColumnSpace )
+#ROVErrorValue.configure(text ="")
+#RowIndex += 1
 
 #Sensor Data
 RowIndex = 2
-SensorData = Label(win,bg = "orange",font="bold")
-SensorData.grid(row=SensorRow,column = SensorCol, columnspan=2)
+SensorData = Label(win,bg = "orange",font=TitleFont)
+SensorData.grid(row=SensorRow,column = SensorCol, columnspan=4)
 SensorData.configure(text="SensorData")
 
 # Temp Sensor
-TempSensorStatus = Label(win,bg="orange")
+TempSensorStatus = Label(win,bg="orange",font=EntryFont)
 TempSensorStatus.grid(row = SensorRow + RowIndex, column = SensorCol)
 TempSensorStatus.configure(text ="Temperature [F]")
-TempSensorValue = Label(win,bg="orange")
+TempSensorValue = Label(win,bg="orange",font=ValueFont)
 TempSensorValue.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
 TempSensorValue.configure(text ="")
 RowIndex += 1
 
 #Pressure
-PressureSensorStatus = Label(win,bg="orange")
+PressureSensorStatus = Label(win,bg="orange",font=EntryFont)
 PressureSensorStatus.grid(row = SensorRow + RowIndex, column = SensorCol)
 PressureSensorStatus.configure(text ="Pressure [kPa]")
-PressureSensorValue = Label(win,bg="orange")
+PressureSensorValue = Label(win,bg="orange",font=ValueFont)
 PressureSensorValue.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
 PressureSensorValue.configure(text ="")
 RowIndex += 1
 
 #Ultrasonic Sensor 1
-UltrasonicSensor1Status = Label(win,bg="orange")
+UltrasonicSensor1Status = Label(win,bg="orange",font=EntryFont)
 UltrasonicSensor1Status.grid(row = SensorRow + RowIndex, column = SensorCol)
 UltrasonicSensor1Status.configure(text ="Left Distance [mm]")
-UltrasonicSensor1Value = Label(win,bg="orange")
+UltrasonicSensor1Value = Label(win,bg="orange",font=ValueFont)
 UltrasonicSensor1Value.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
 UltrasonicSensor1Value.configure(text ="")
 RowIndex += 1
 
 #Ultrasonic Sensor 2
-UltrasonicSensor2Status = Label(win,bg="orange")
+UltrasonicSensor2Status = Label(win,bg="orange",font=EntryFont)
 UltrasonicSensor2Status.grid(row = SensorRow + RowIndex, column = SensorCol)
 UltrasonicSensor2Status.configure(text ="Right Distance [mm]")
-UltrasonicSensor2Value = Label(win,bg="orange")
+UltrasonicSensor2Value = Label(win,bg="orange",font=ValueFont)
 UltrasonicSensor2Value.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
 UltrasonicSensor2Value.configure(text ="")
 RowIndex += 1
 
 #Ultrasonic Sensor 3
-UltrasonicSensor3Status = Label(win,bg="orange")
+UltrasonicSensor3Status = Label(win,bg="orange",font=EntryFont)
 UltrasonicSensor3Status.grid(row = SensorRow + RowIndex, column = SensorCol)
 UltrasonicSensor3Status.configure(text ="Bottom Distance [mm]")
-UltrasonicSensor3Value = Label(win,bg="orange")
+UltrasonicSensor3Value = Label(win,bg="orange",font=ValueFont)
 UltrasonicSensor3Value.grid(row = SensorRow + RowIndex, column = SensorCol + SensorColSpace )
 UltrasonicSensor3Value.configure(text ="")
 RowIndex += 1
@@ -207,81 +214,25 @@ def show_graphs():
     
    
     while True:
-
-        #Lights State Machine
-        if Global.ControllerMap["Buttons"]["A"] == 0 and LightState == 0:
-            LightState = 0
-        elif Global.ControllerMap["Buttons"]["A"] == 1 and LightState == 0:
-            LightState = 1
-        elif Global.ControllerMap["Buttons"]["A"] == 1 and LightState == 1:
-            LightState = 1
-        elif Global.ControllerMap["Buttons"]["A"] == 0 and LightState == 1:
-            LightState = 2
-        elif Global.ControllerMap["Buttons"]["A"] == 0 and LightState == 2:
-            LightState = 2
-        elif Global.ControllerMap["Buttons"]["A"] == 1 and LightState == 2:
-            LightState = 3
-        elif Global.ControllerMap["Buttons"]["A"] == 0 and LightState == 3:
-            LightState = 3
-        elif Global.ControllerMap["Buttons"]["A"] == 1 and LightState == 3:
-            LightState = 0
-
-        if LightState == 1 or LightState == 2:
+        if Global.LightState == 1 or Global.LightState == 2:
             LightStatusStr = "Enabled"
         else: LightStatusStr = "Disabled"
-
-
+     
+      
         #Auto Mode State Machine
-        if Global.ControllerMap["START"]["Value"] == 0 and AutoState == 0:
-            AutoState = 0
-        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 0:
-            AutoState = 1
-        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 1:
-            AutoState = 1
-        elif Global.ControllerMap["START"]["Value"] == 0 and AutoState == 1:
-            AutoState = 2
-        elif Global.ControllerMap["START"]["Value"] == 0 and AutoState == 2:
-            AutoState = 2
-        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 2:
-            AutoState = 3
-        elif Global.ControllerMap["START"]["Value"] == 0 and AutoState == 3:
-            AutoState = 3
-        elif Global.ControllerMap["START"]["Value"] == 1 and AutoState == 3:
-            AutoState = 0
-            Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0
-            Global.ControllerMap["Trigger"]["Right"] = 0
-            Global.ControllerMap["Trigger"]["Left"] = 0
-
-        if AutoState == 1 or AutoState == 2:
+       
+        if Global.AutoState == 1 or Global.AutoState == 2:
             Global.AutoMode = True
         else: Global.AutoMode = False
 
         Global.ControllerMap["START"]["Value"] == 0 and AutoState == 0
-
-       
 
         #if Global.ControllerMap["Bumper"]["Right"] == 1:
         #    Global.MemMap["Vertical Lock"]["Lock"] = "Locked"
         #else:
         #    Global.MemMap["Vertical Lock"]["Lock"] = "Unlocked"
 
-        #Vertical Lock State Machine
-        if Global.ControllerMap["Bumper"]["Right"] == 0 and Global.VertState == 0:
-            Global.VertState = 0
-        elif Global.ControllerMap["Bumper"]["Right"] == 1 and Global.VertState == 0:
-            Global.VertState = 1
-        elif Global.ControllerMap["Bumper"]["Right"] == 1 and Global.VertState == 1:
-            Global.VertState = 1
-        elif Global.ControllerMap["Bumper"]["Right"] == 0 and Global.VertState == 1:
-            Global.VertState = 2
-        elif Global.ControllerMap["Bumper"]["Right"] == 0 and Global.VertState == 2:
-            Global.VertState = 2
-        elif Global.ControllerMap["Bumper"]["Right"] == 1 and Global.VertState == 2:
-            Global.VertState = 3
-        elif Global.ControllerMap["Bumper"]["Right"] == 0 and Global.VertState == 3:
-            Global.VertState = 3
-        elif Global.ControllerMap["Bumper"]["Right"] == 1 and Global.VertState == 3:
-            Global.VertState = 0
+       
 
         if Global.VertState == 1 or Global.VertState == 2:
             Global.MemMap["Vertical Motor"]["Lock"] = "Locked"
@@ -301,7 +252,7 @@ def show_graphs():
         if Global.AutoMode: AutoModeStr = "Enabled"
         else: AutoModeStr = "Disabled"
         CPUTempStr = str(Global.MemMap["CPU"]["Temp"])
-        ROVErrStr = str(Global.MemMap["Error"]["Message"])
+       # ROVErrStr = str(Global.MemMap["Error"]["Message"])
         TempStr = str(Global.MemMap["TempSensor"]["TempF"])
         PressureStr = str(Global.MemMap["DepthSensor"]["Depth"] * 4)
         UltraSonic1Str = str(Global.MemMap["UltraSensor1"]["Distance"])
@@ -315,7 +266,7 @@ def show_graphs():
         VerticleMotorLockValue.configure(text=VerticalMotorLockStr)
         AutoModeValue.configure(text=AutoModeStr)
         CPUTempValue.configure(text=CPUTempStr)
-        ROVErrorValue.configure(text=ROVErrStr)
+        #ROVErrorValue.configure(text=ROVErrStr)
 
         #SensorData
         TempSensorValue.configure(text=TempStr)
@@ -323,7 +274,7 @@ def show_graphs():
         UltrasonicSensor1Value.configure(text=UltraSonic1Str)
         UltrasonicSensor2Value.configure(text=UltraSonic2Str)
         UltrasonicSensor3Value.configure(text=UltraSonic3Str)
-        sleep(.1)
+        sleep(.001)
 
 AutoModeTimer = 0
 def show_frames():
@@ -376,8 +327,8 @@ def show_frames():
             AutoModeTimer = time.time()
         elif time.time() - AutoModeTimer > 1:
             AutoModeTimer = 0
-            Global.AutoMode = False
-            AutoState = 0
+            #Global.AutoMode = False
+            Global.AutoState = 0
         # vertical-ish pipe
         Global.ControllerMap["Stick"]["Left"]["ValueY"] = 0.15
         TurnSpeedR = 0 + (1 - 0) * ((AvgCenterMassX - 240) / (480 - 240))

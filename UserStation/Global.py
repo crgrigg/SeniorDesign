@@ -2,8 +2,10 @@
 
 #Describes Current Data of the system for the purpose of communication with the
 # Global Data Shared by threads
-AutoMode = False
+AutoState = 0
 VertState = 0
+LightState = 0
+AutoMode = False
 DataSetActive = False
 
 MemMap = {
