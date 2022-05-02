@@ -16,3 +16,8 @@ ____________________
 While motor.py is running on the raspberry pi, switch back to the user station and run the "client.py" file located in the User Station folder in an IDE like Microsoft Visual Studio in order to begin the client side of the process.
 Make sure an Xbox controller is connected to the laptop using a USB cable before running, or the controller commands will not be sent to the raspberry pi. 
 This file takes a few seconds to fully begin and will run the program to startup the user interface which includes the live video and textual feedback in addition to starting a program to receive Xbox controller inputs that will be sent to the pi.
+
+DEBUGGING
+___________
+
+If at any point it doesn’t seem like the raspberry is successfully connected to the user station laptop over ethernet, use a command prompt on the user station to ping the pi’s IP address and confirm that the pi is replying to the ping. The command will look something like: “ping 169.254.253.85” just with the real raspberry pi IP address. 
